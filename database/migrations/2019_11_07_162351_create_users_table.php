@@ -36,8 +36,7 @@ class CreateUsersTable extends Migration
             $table->string('lat', 100)->nullable();
             $table->string('lng', 100)->nullable();
             // $table->enum('notification_status', ['on', 'off'])->default('on');
-            $table->enum('complete_profile', ['no', 'yes'])->default('no');
-            $table->string('profile_status', 50)->nullable();
+            $table->integer('profile_step')->nullable();
             // $table->integer('plan_id')->unsigned();
             $table->enum('user_verfication', ['no', 'yes']);
             $table->string('password')->nullable();

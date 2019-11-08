@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Content;
+use App\Notification;
 use Illuminate\Http\Request;
 
-class ContentController extends Controller
+class NotificationController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +14,7 @@ class ContentController extends Controller
      */
     public function index()
     {
-      $contents = Content::all();
-      return ['status' => !!$contents, 'msg' => 'Content Received Successfully', 'contents' => $contents];
+        //
     }
 
     /**
@@ -42,10 +41,10 @@ class ContentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Content  $content
+     * @param  \App\Notification  $notification
      * @return \Illuminate\Http\Response
      */
-    public function show(Content $content)
+    public function show(Notification $notification)
     {
         //
     }
@@ -53,10 +52,10 @@ class ContentController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Content  $content
+     * @param  \App\Notification  $notification
      * @return \Illuminate\Http\Response
      */
-    public function edit(Content $content)
+    public function edit(Notification $notification)
     {
         //
     }
@@ -65,10 +64,10 @@ class ContentController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Content  $content
+     * @param  \App\Notification  $notification
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Content $content)
+    public function update(Request $request, Notification $notification)
     {
         //
     }
@@ -76,10 +75,10 @@ class ContentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Content  $content
+     * @param  \App\Notification  $notification
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Content $content)
+    public function destroy(Notification $notification)
     {
         //
     }

@@ -22,7 +22,7 @@ Route::group(['middleware' => 'localization'], function(){
 //       return $request->user();
 //   });
 //
-//   Route::post('login.php', 'UserController@login');
+  Route::post('login', 'UserController@login');
 //
 //
 //   Route::group(['middleware' => 'auth:api'], function(){
@@ -38,14 +38,14 @@ Route::group(['middleware' => 'localization'], function(){
 //   Route::post('signup_step_3.php', 'UserController@signup_step_3');
 //   Route::post('signup_step_2.php', 'UserController@signup_step_2');
 //   Route::post('signup_step_1.php', 'UserController@signup_step_1');
-//   Route::post('complete_signup.php', 'UserController@complete_signup');
+  Route::post('complete_signup', 'UserController@complete_signup');
 //   Route::post('image_upload.php', 'UserController@image_upload');
 //   Route::post('update_user_details.php', 'UserController@update_user_details');
 //   Route::get('get_all_plan.php', 'PlanController@get_all_plan');
   Route::get('users/count', 'UserController@count');
 //   Route::post('users/auth_image_upload', 'UserController@authImageUpload');
 //
-//   Route::group(['middleware' => 'activated'], function(){
+  Route::group(['middleware' => 'activated'], function(){
 //     Route::get('get_my_receive_request.php', 'UserController@get_my_receive_request');
 //     Route::get('get_my_pending_sent_requests.php', 'UserController@get_my_pending_sent_requests');
 //     Route::get('get_my_whatsnum_contacts.php', 'UserController@get_my_whatsnum_contacts');
@@ -85,64 +85,28 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::get('mail/support/view', 'MailingController@view');
 //     Route::post('mail/support/send', 'MailingController@support');
 //     Route::post('users/delete', 'UserController@delete');
-//     Route::post('users/passcode/update', 'UserController@updatePassCode');
+    Route::post('users/passcode/update', 'UserController@updatePassCode');
 //     // Route::get('activities/{id}/user_request', 'ActivityController@userRequest');
 //     Route::get('notifications/unread/count', 'UserNotificationMessageController@unreadCount');
-//     Route::post('register', 'UserController@register');
+    // Route::post('register', 'UserController@register');
 //
-//   });
-//   Route::post('register', 'UserController@register');
+  });
+  Route::post('register', 'UserController@register');
 //
 });
 //
 // use App\Events\NewNotification;
 // use App\Events\NewPost;
-// use App\User;
+use App\User;
 // use App\Activity;
 // use App\Plan;
 // use App\UserRequest;
-// Route::get('test', function(Request $request){
-//   $user = User::findOrFail(1);
-//   $updates = $request->all();
-//   $keys = array_keys($updates);
-//   $settings = ['job_title', 'activity_privacy', 'relationship_status', 'education' ];
-//   $metas = $user->load(['metas' => function($q){
-//     $q->where('name', 'relationship_status')->latest();
-//   }]);
-//   dd($metas->metas);
-//   $arr = array_intersect($keys, $settings);
-//   if ($arr) {
-//     foreach ($arr as $value) {
-//       $name = $value;
-//       break;
-//     }
-//     $value = $request->$name;
-//     dd($name, $value);
-//   }
-//
-//   if (in_array('activity_privacy', $keys)) {
-//     return dd(true, array_search('activity_privacy', $keys));
-//   }
-//   dd($request->all());
-//   return $user;
-//   // event(new \App\Events\NewUser($user));
-//   // $activity = Activity::find(34);
-//   // $activity->load(['post.author', 'user']);
-//   // if ($activity->post) {
-//   //   $author = $activity->post->author;
-//   // } else {
-//   //   $author = $activity->user;
-//   // }
-//   // dd($author, $activity);
-//   // return $activity;
-//   // dd($user->plan->no_contact_use);
-//   // $other_user = User::findOrFail(14620);
-//   $activity = Activity::find(45);
-//
-//   // event(new NewNotification($other_user, "new notification from $user->name"));
-//   event(new NewPost($activity));
-//   return $request;
-// });
+Route::get('test', function(Request $request){
+  $user = User::findOrFail(1);
+  $updates = $request->all();
+  \App\Notification::DeviceTokenStore_1_Signal($user, 'android', "ee3c6b83-fc80-4d21-903a-3953659f878c");
+  return $user;
+});
 //
 // Route::get('cache-clear', function(Request $request){
 //   shell_exec('composer dump-autolad');

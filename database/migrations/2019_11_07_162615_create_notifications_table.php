@@ -15,11 +15,11 @@ class CreateNotificationsTable extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('type');
+            $table->string('type')->nullbale();
             $table->morphs('notifiable');
             $table->text('device_type')->nullable();
-            $table->text('player_id')->nullable();
-            $table->text('data');
+            // $table->text('player_id')->nullable();
+            $table->text('data')->nullable();
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
