@@ -60,30 +60,38 @@ class NotificationMessage extends Model
     return $insert;
   }
 
-  // public function withAvatar(){
-  //   $this->avatar = $this->getUserAvatarUrl();
-  //   return $this;
-  // }
+  public function withAvatar(){
+    $this->avatar = $this->getUserAvatarUrl();
+    return $this;
+  }
   //
-  // public function getUserAvatarUrl($conversion = 'thumb'){
-  //   $user = User::find($this->user_id);
-  //   if ($user) {
-  //     $media = $user->getFirstMedia('avatar');
-  //     if ($media) {
-  //       return $media->getUrl($conversion);
-  //     }
-  //     return null;
-  //   }
-  //   return null;
-  // }
+  public function getUserAvatarUrl($conversion = 'thumb'){
+    $user = $this->receiver;
+    if ($user) {
+      $media = $user->getFirstMedia('avatar');
+      if ($media) {
+        return $media->getUrl($conversion);
+      }
+    }
+    return null;
+  }
   //
   // public static function getUserNotificationById($user_id,$notification_id){
   //   return self::where('delete_flag', 'no')->where('other_user_id', $user_id)->where('notification_message_id', $notification_id)->first();
   // }
   //
-  // public static function getNotifications(User $user){
-  //   return self::where('delete_flag', 'no')->where('other_user_id', $user->user_id)->orderBy('notification_message_id', 'DESC')->get();
-  // }
+  public static function getNotifications(User $user){
+    return $user->notification_messages();
+  }
+
+  public function receiver(){
+    return $this->belongsTo(User::class, 'other_user_id');
+  }
+
+  public function sender(){
+    return $this->hasOne(User::class, 'user_id');
+  }
+
   //
   // public static function unread(User $user){
   //   return self::where('delete_flag', 'no')->where('other_user_id', $user->user_id)->where('read_status', 'no')->orderBy('notification_message_id', 'DESC')->get();
