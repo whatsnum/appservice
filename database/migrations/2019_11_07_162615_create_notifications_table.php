@@ -17,8 +17,8 @@ class CreateNotificationsTable extends Migration
             $table->uuid('id')->primary();
             $table->string('type')->nullbale();
             $table->morphs('notifiable');
-            $table->text('device_type')->nullable();
-            // $table->text('player_id')->nullable();
+            $table->string('device_type')->nullable();
+            $table->string('player_id')->nullable();
             $table->text('data')->nullable();
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
