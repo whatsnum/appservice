@@ -45,7 +45,7 @@ Route::group(['middleware' => 'localization'], function(){
   Route::get('users/count', 'UserController@count');
 //   Route::post('users/auth_image_upload', 'UserController@authImageUpload');
 //
-  Route::group(['middleware' => 'activated'], function(){
+  Route::group(['middleware' => ['activated', 'auth:api']], function(){
 //     Route::get('get_my_receive_request.php', 'UserController@get_my_receive_request');
 //     Route::get('get_my_pending_sent_requests.php', 'UserController@get_my_pending_sent_requests');
 //     Route::get('get_my_whatsnum_contacts.php', 'UserController@get_my_whatsnum_contacts');

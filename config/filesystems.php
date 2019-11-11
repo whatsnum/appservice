@@ -65,10 +65,10 @@ return [
         ],
 
         'user_avatars' => [
-            'driver' => env('FILESYSTEM_DRIVER', 'local'),
-            'root'   =>  base_path('/images/user_avatars'),
-            'visibility' => 'public',
-            'url'       => env('APP_URL').'/'. 'images/user_avatars',
+            'driver'      => env('FILESYSTEM_DRIVER', 'local'),
+            'root'        =>  base_path('/images/user_avatars'),
+            'visibility'  => 'public',
+            'url'         => env('APP_URL').'/'. 'images/user_avatars',
         ],
     ],
 
