@@ -399,13 +399,13 @@ class User extends Authenticatable implements HasMedia
     //   return Group::getMine($this);
     // }
     //
-    // public function withLiked($q, $author = false){
-    //   $relation = $author ? 'post.author.liked_profile' : 'liked_profile' ;
-    //   $q->with([$relation => function($q){
-    //     $q->where('user_id', $this->user_id);
-    //   }]);
-    //   return $q;
-    // }
+    public function withLiked($q, $author = false){
+      $relation = $author ? 'post.author.liked_profile' : 'liked_profile' ;
+      $q->with([$relation => function($q){
+        $q->where('id', $this->id);
+      }]);
+      return $q;
+    }
     //
     // public function withUserRequestStatus(User $user){
     //   $status = UserRequest::usersRequestStatus($this, $user);
@@ -634,12 +634,8 @@ class User extends Authenticatable implements HasMedia
     }
 
     public function activities(){
-      return $this->hasMany(Activity::class, 'content_id');
+      return $this->morphMany(Activity::class, 'activeable');
     }
-
-    // public function activities(){
-    //   return $this->morphMany(Activity::class, 'content_id');
-    // }
 
     public function posts(){
       return $this->hasMany(Post::class);
