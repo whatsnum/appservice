@@ -22,7 +22,7 @@ class CreateNotificationMessagesTable extends Migration
             $table->text('action_json')->nullable();
             $table->text('title')->nullable();
             $table->text('message')->nullable();
-            $table->enum('read_status', ['no', 'yes'])->default('no');
+            $table->boolean('read_status')->default(false);
             $table->timestamps();
         });
 

@@ -699,13 +699,16 @@ class User extends Authenticatable implements HasMedia
       return $this->hasOne(UserMeta::class)->where('name', 'activity_privacy');
     }
 
-
     public function liked_profile(){
       return $this->hasOne(UserNotificationMessage::class, 'other_user_id')->where('action', 'like_profile');
     }
 
     public function oneSignalData(){
       return $this->morphOne(Notification::class, 'notifiable')->where('type', 'onesignal')->where('player_id', '!=', NULL)->latest()->first();
+    }
+
+    public function notification_messages(){
+      return $this->hasMany(NotificationMessage::class, 'other_user_id')->latest()->get();
     }
 
     // public function contact(){

@@ -92,12 +92,12 @@ class NotificationMessage extends Model
     return $this->hasOne(User::class, 'user_id');
   }
 
-  //
-  // public static function unread(User $user){
-  //   return self::where('delete_flag', 'no')->where('other_user_id', $user->user_id)->where('read_status', 'no')->orderBy('notification_message_id', 'DESC')->get();
-  // }
-  //
-  // public static function unreadCount(User $user){
-  //   return self::unread($user)->count();
-  // }
+
+  public static function unread(User $user){
+    return self::where('other_user_id', $user->id)->where('read_status', 'no')->latest()->get();
+  }
+
+  public static function unreadCount(User $user){
+    return self::unread($user)->count();
+  }
 }

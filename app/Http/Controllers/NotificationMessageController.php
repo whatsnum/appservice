@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\NotificationMessage;
 use Illuminate\Http\Request;
+use App\User;
 
 class NotificationMessageController extends Controller
 {
@@ -119,27 +120,19 @@ class NotificationMessageController extends Controller
     //
     // }
     //
-    // public function read_my_notification(Request $request){
-    //   $validate = $this->validates($request, [
-    //     'notification_id'   => 'required',
-    //     // 'state'           => 'required',
-    //   ]);
-    //   if (!$validate['success']) {
-    //     return $validate;
-    //   }
-    //   $user = $request->user;
-    //   $notification_id = $request->notification_id;
-    //   $notification = UserNotificationMessage::getUserNotificationById($user->user_id, $notification_id);
-    //   if ($notification) {
-    //     $notification->read_status='yes';
-    //     $notification->save();
-    //     return array('success'=>'true','msg' =>'notification read successfully', 'notification' => $notification);
-    //   } else {
-    //     return array('success'=>'false','msg' =>array(trans('messages.msg_data_not_found')));
-    //   }
-    // }
-    //
-    // public function unreadCount(Request $request){
-    //   return UserNotificationMessage::unreadCount($request->user);
-    // }
+    public function read(Request $request, NotificationMessage $notification_message){
+      // $user = $request->user();
+      if ($notification_message) {
+        $notification_message->update([
+          'read_status' => true,
+        ]);
+        return ['status'=> true, 'msg' =>'notification read successfully', 'notification_message' => $notification_message];
+      } else {
+        return ['status'=> false,'msg' =>trans('messages.msg_data_not_found')];
+      }
+    }
+
+    public function unreadCount(Request $request){
+      return NotificationMessage::unreadCount($request->user());
+    }
 }

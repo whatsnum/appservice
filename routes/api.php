@@ -29,8 +29,8 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::post('details', 'UserController@details');
 //   });
 //
-  Route::get('contents', 'ContentController@index');
-//   Route::resource('content_master', 'ContentMasterController');
+  // Route::get('contents', 'ContentController@index');
+  Route::resource('contents', 'ContentController');
 //   Route::resource('countries', 'CountriesController');
 //   Route::post('otp_verfiy.php', 'UserNotificationController@otp_verify');
 //   Route::post('signup_step_5.php', 'UserController@signup_step_5');
@@ -57,9 +57,10 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::post('report_user.php', 'ReportUserController@report_user');
 //     Route::get('search_modal.php', 'UserController@search_modal');
 //     Route::get('search_location.php', 'UserController@search_location');
-//     Route::get('get_all_notification.php', 'UserNotificationMessageController@get_all_notification');
-//     Route::post('read_my_notification.php', 'UserNotificationMessageController@read_my_notification');
-//     Route::get('get_notifications.php', 'UserNotificationMessageController@get_notifications');
+//     Route::get('get_all_notification.php', 'NotificationMessageController@get_all_notification');
+    Route::post('notifications/read/{notification_message}', 'NotificationMessageController@read');
+    Route::get('notifications', 'NotificationMessageController@index');
+    Route::get('notifications/unread/count', 'NotificationMessageController@unreadCount');
 //     Route::get('insert_temp_plan.php', 'PlanController@insert_temp_plan');
 //     Route::get('send_purchase_plan_notification.php', 'PlanController@send_purchase_plan_notification');
 //     Route::post('swap_profile_image.php', 'UserController@swap_profile_image');
@@ -87,7 +88,6 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::post('users/delete', 'UserController@delete');
     Route::post('users/passcode/update', 'UserController@updatePassCode');
 //     // Route::get('activities/{id}/user_request', 'ActivityController@userRequest');
-//     Route::get('notifications/unread/count', 'UserNotificationMessageController@unreadCount');
     // Route::post('register', 'UserController@register');
 //
   });
