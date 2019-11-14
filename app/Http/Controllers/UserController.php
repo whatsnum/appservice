@@ -9,6 +9,7 @@ use App\UserPlan;
 use App\Plan;
 use App\Setting;
 use App\Media;
+use App\Activity;
 
 class UserController extends Controller
 {
@@ -352,49 +353,43 @@ class UserController extends Controller
   //   return $this->image_upload($request);
   // }
   //
-  // public function image_upload(Request $request){
-  //   $validator = Validator::make($request->all(), [
-  //     'user_id'       => 'required',
-  //     'image'         => 'required',
-  //     'type'          => 'required',
-  //   ]);
-  //
-  //   $user_id  = $request->user_id;
-  //   // $image    = $request->file('image');
-  //   $image    = $request->image;
-  //   $type     = $request->type;
-  //
-  //   $user = User::find($user_id);
-  //
-  //   if ($user) {
-  //   // try {
-  //     // $image = $user->image_upload($image, $type);
-  //       if(is_array($image)){
-  //         $images = [];
-  //         foreach ($image as $key => $value) {
-  //           $images[] = $user->uploadImage($value, "images", $request, true);
-  //         }
-  //         $image = $images;
-  //         $photos['images'] = [];
-  //         foreach ($image as $media) {
-  //           $photos['images'][] = $media['images'];
-  //           // $media->getUrl();
-  //         }
-  //         \App\Activity::addNew('images', $request, $user_id, $photos);
-  //       } else {
-  //         $image = ($user->uploadImage($image, $type, $request))['image'];
-  //       }
-  //       if ($user) {
-  //         $user = $user::getUserDetails($user->user_id);
-  //       }
-  //       return ['success'=>'true','msg'=>array(trans('messages.msg_update_profile')),'user_details'=>$user, 'image' => is_array($image) ? $image : $image, 'type' => $type];
-  //     }
-  //
-  //     return ['success'=>'false','msg'=>array(trans('messages.msg_user_id'))];
-  //   // } catch (\Exception $e) {
-  //   //   return $this->err($e);
-  //   // }
-  // }
+  public function uploadImage(Request $request){
+    $request->validate([
+      'image'         => 'required',
+      'type'          => 'required',
+    ]);
+
+    $image    = $request->image;
+    $type     = $request->type;
+
+    $user = $request->user();
+
+    if ($user) {
+      if(is_array($image)){
+        $images = [];
+        foreach ($image as $key => $value) {
+          $media_file = Media::uploadImage($value);
+          $images[] = $user->uploadImage($media_file, "images", $request, true);
+        }
+        $image = $images;
+        $photos['images'] = [];
+        foreach ($image as $media) {
+          $photos['images'][] = $media['images'];
+        }
+        Activity::addNew('images', $request, $user, $photos);
+      } else {
+        $media_file = Media::uploadImage($image);
+        $image = ($user->uploadImage($media_file, $type, $request))['images'];
+        Activity::addNew('profile', $request, $user, $image);
+      }
+      if ($user) {
+        $user = $user->myDetails();
+      }
+      return ['status'=>true,'msg'=>trans('messages.msg_update_profile'),'user'=>$user, 'image' => is_array($image) ? $image : $image, 'type' => $type];
+    }
+
+    return ['status'=>false,'msg'=>trans('messages.msg_user_id')];
+  }
   //
   // public function delete_upload_image(Request $request){
   //   $validate = $this->validates($request, [

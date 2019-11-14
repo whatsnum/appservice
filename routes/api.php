@@ -32,16 +32,16 @@ Route::group(['middleware' => 'localization'], function(){
   // Route::get('contents', 'ContentController@index');
   Route::resource('contents', 'ContentController');
 //   Route::resource('countries', 'CountriesController');
+//   Route::get('get_all_plan.php', 'PlanController@get_all_plan');
 //   Route::post('otp_verfiy.php', 'UserNotificationController@otp_verify');
 //   Route::post('signup_step_5.php', 'UserController@signup_step_5');
 //   Route::post('signup_step_4.php', 'UserController@signup_step_4');
 //   Route::post('signup_step_3.php', 'UserController@signup_step_3');
 //   Route::post('signup_step_2.php', 'UserController@signup_step_2');
 //   Route::post('signup_step_1.php', 'UserController@signup_step_1');
-  Route::post('complete_signup', 'UserController@complete_signup');
-//   Route::post('image_upload.php', 'UserController@image_upload');
-//   Route::post('update_user_details.php', 'UserController@update_user_details');
 //   Route::get('get_all_plan.php', 'PlanController@get_all_plan');
+  Route::post('complete_signup', 'UserController@complete_signup');
+//   Route::post('update_user_details.php', 'UserController@update_user_details');
   Route::get('users/count', 'UserController@count');
 //   Route::post('users/auth_image_upload', 'UserController@authImageUpload');
 //
@@ -74,6 +74,7 @@ Route::group(['middleware' => 'localization'], function(){
     Route::resource('activities', 'ActivityController');
 //     // Route::resource('countries', 'ActivityController');
 //     Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
+    Route::post('image_upload', 'UserController@uploadImage');
 //     Route::get('users/new', 'UserRequestController@new_users');
 //     Route::get('users/state/random', 'UserRequestController@random_users');
 //     Route::get('users/valid', 'UserController@validIds');

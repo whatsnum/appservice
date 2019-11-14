@@ -70,6 +70,38 @@ return [
             'visibility'  => 'public',
             'url'         => env('APP_URL').'/'. 'images/user_avatars',
         ],
+
+        'user_galleries' => [
+          'driver' => env('FILESYSTEM_DRIVER', 'local'),
+          'root'   =>  base_path('/images/user_gallery'),
+          'visibility' => 'public',
+          'url'         => env('APP_URL').'/'. 'images/user_gallery',
+        ],
+
+        'user_post_images' => [
+            'driver' => env('FILESYSTEM_DRIVER', 'local'),
+            'root'   =>  base_path('/images/user_post_images'),
+            'visibility' => 'public',
+            'url'         => env('APP_URL').'/'. 'images/user_post_images',
+        ],
+        'user_group_photos' => [
+            'driver' => env('FILESYSTEM_DRIVER', 'local'),
+            'root'   =>  base_path('/images/user_group_photos'),
+            'visibility' => 'public',
+            'url'         => env('APP_URL').'/'. 'images/user_group_photos',
+        ],
+        'user_covers' => [
+          'driver' => env('FILESYSTEM_DRIVER', 'local'),
+          'root'   =>  base_path('/images/user_covers'),
+          'visibility' => 'public',
+          'url'         => env('APP_URL').'/images/user_covers',
+        ],
+        'activity_images' => [
+          'driver' => env('FILESYSTEM_DRIVER', 'local'),
+          'root'   =>  base_path('/images/activity_images'),
+          'visibility' => 'public',
+          'url'         => env('APP_URL').'/images/activity_images',
+        ],
     ],
 
 ];

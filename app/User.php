@@ -12,15 +12,14 @@ use Spatie\MediaLibrary\Models\Media;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Image\Image;
 
-// use App\UserImage;
-// use App\Plan;
-// use App\UserPlan;
-// use App\Countries;
-// use App\States;
-// use App\UserRequest;
-// use App\Group;
+use App\Plan;
+use App\UserPlan;
+use App\Countries;
+use App\States;
+use App\UserRequest;
+use App\Group;
 use App\Activity;
-// use Carbon\Carbon;
+use Carbon\Carbon;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -75,7 +74,7 @@ class User extends Authenticatable implements HasMedia
       $self = self::where('user_id', $user_id)->where('otp_verify', 'yes')->where('delete_flag', 'no')->first();
       if ($self) {
         $self->load(['settings', 'plan']);
-        $self//->withPhotoUrl()
+        $self->withPhotoUrl()
         // ->withFeedsPhotoUrl()
         ->withMetas();
         if ($user) $self->load(['liked_profile' => function($q) use($user) {
@@ -100,7 +99,8 @@ class User extends Authenticatable implements HasMedia
 
     public function myDetails(){
       $this->load(['settings', 'plan']);
-      // $this->withPhotoUrl()->withFeedsPhotoUrl();
+      $this->withPhotoUrl();
+      // ->withFeedsPhotoUrl();
       $this->withMetas();
       // $plan = $this->plan();
 
@@ -123,14 +123,10 @@ class User extends Authenticatable implements HasMedia
           $medias = $this->getMedia($image);
           $imgs = [];
           foreach ($medias as $media) {
-            // $width = Image::load($media->getPath())->getWidth();
-            // $height = Image::load($media->getPath())->getHeight();
             $obj = new \stdClass();
             $obj->thumb = $media->getUrl('thumb');
             $obj->photo = $media->getUrl();
             $imgs[] = $obj;
-            // $obj->width = $width;
-            // $obj->height = $height;
           }
           $images->$image = $imgs;
         } else {
@@ -138,14 +134,10 @@ class User extends Authenticatable implements HasMedia
           if ($media) {
             $thumb = $media->getUrl('thumb');
             $image_url = $media->getUrl();
-            // $width = Image::load($media->getPath())->getWidth();
-            // $height = Image::load($media->getPath())->getHeight();
             $obj = new \stdClass();
             $obj->thumb = $thumb;
             $obj->photo = $image_url;
             $images->$image = $obj;
-            // $obj->width = $width;
-            // $obj->height = $height;
           } else {
             if ($image === 'images') {
               $images->$image = [];
@@ -159,7 +151,6 @@ class User extends Authenticatable implements HasMedia
         }
       }
       $this->images = $images;
-      // dd($this);
       return $this;
     }
 
@@ -218,31 +209,23 @@ class User extends Authenticatable implements HasMedia
       switch ($type) {
         case 'profile':
           $name = 'image';
-          // $this->$name = $media_file['file_name'];
           $collection = 'avatar';
           break;
         case 'cover':
           $name = 'cover';
-          // $this->$name = $file_name;
           $collection = 'cover';
           break;
         case 'images':
           $name = 'images';
-          // $this->$name = $file_name;
           $collection = 'images';
           break;
         default:
-          // $this->$type = $file_name;
           $name = $type;
           $collection = $type;
           break;
       }
 
-      // $this->addMediaFromBase64($media_file)->usingName($name)->usingFileName($file_name)->toMediaCollection($collection);
       $this->addMedia($media_file)->usingName($name)->usingFileName($file_name)->toMediaCollection($collection);
-      // if ($type != 'cover') {
-      //   $this->save();
-      // }
       $media = $this->getFirstMedia($collection);
       $thumb = $media->getUrl('thumb');
       $image_url = $media->getUrl();
@@ -400,18 +383,29 @@ class User extends Authenticatable implements HasMedia
     // }
     //
     public function withLiked($q, $author = false){
-      $relation = $author ? 'post.author.liked_profile' : 'liked_profile' ;
-      $q->with([$relation => function($q){
-        $q->where('id', $this->id);
-      }]);
+      // $relation = $author ? 'post.author.liked_profile' : 'liked_profile' ;
+      if ($author) {
+        $q->with(['activeable' => function($q){
+          $q->morphWith([
+            Post::class => function($q){
+              $q->where('id', $this->id);
+          }]);
+        }]);
+      } else {
+        $q->with(['liked_profile' => function($q){
+          $q->where('id', $this->id);
+        }]);
+      }
+
+
       return $q;
     }
-    //
-    // public function withUserRequestStatus(User $user){
-    //   $status = UserRequest::usersRequestStatus($this, $user);
-    //   $this->request_detail = $status;
-    //   return $this;
-    // }
+
+    public function withUserRequestStatus(User $user){
+      $status = UserRequest::usersRequestStatus($this, $user);
+      $this->request_detail = $status;
+      return $this;
+    }
     //
     // public function withProfileUrl(){
     //   $media = $this->getFirstMedia('avatar');
@@ -629,9 +623,9 @@ class User extends Authenticatable implements HasMedia
     //   'other_user_min_age', 'phone', 'phone_code', 'plan_name', 'profile_status', 'request_detail', 'settings', 'state', 'updatetime', 'user_id', 'user_verfication',
     // ];
     //
-    public function groups(){
-      return $this->hasMany(Group::class);
-    }
+    // public function groups(){
+    //   return $this->hasMany(Group::class);
+    // }
 
     public function activities(){
       return $this->morphMany(Activity::class, 'activeable');

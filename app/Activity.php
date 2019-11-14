@@ -16,10 +16,9 @@ use App\Jobs\BroadcastNewPost;
 class Activity extends Model implements HasMedia
 {
   use HasMediaTrait;
-  protected $fillable = ['content_id', 'action', 'type'];
+  protected $fillable = ['action'];
 
-  public function addImages($images, $type){
-    // $type == 'profile'
+  public function addImages($images){
     if (is_array($images)) {
       foreach ($images['images'] as $image) {
         $this->addMediaFromUrl($image)->usingName('images')->toMediaCollection('images');
@@ -30,7 +29,7 @@ class Activity extends Model implements HasMedia
   }
 
   public function updateImages($images){
-    $post = $this->load('post')->post;
+    $post = $this->load(['activeable' => [Post::class]])->activeable;
     if ($post) {
       $medias = $this->getMedia('images');
       if ($medias) {
@@ -48,8 +47,8 @@ class Activity extends Model implements HasMedia
   public static function migratePosts() {
     $activities = self::all();
     $activities->map(function($activity){
-      if ($activity->type == 'post') {
-        $post = $activity->load('post')->post;
+      if ($activity->activeable_type == Post::class) {
+        $post = $activity->load(['activeable' => [Post::class]])->activeable;
         if ($post) {
           $images = $post->withPhotoUrl()->images;
           foreach ($images as $img) {
@@ -142,12 +141,12 @@ class Activity extends Model implements HasMedia
 
   private static function contact(&$q, $user){
     return $q->whereHas('accepted_requests', function($q) use($user){
-      $q->where('other_user_id', $user->user_id);
+      $q->where('other_user_id', $user->id);
     })
     ->orWhereHas('accept_requests', function($q) use($user){
-      $q->where('user_id', $user->user_id);
+      $q->where('user_id', $user->id);
     })
-    ->orWhere('user_id', $user->user_id);
+    ->orWhere('user_id', $user->id);
   }
 
   private static function activity_filter($activity_privacy, $q, $user){
@@ -175,9 +174,13 @@ class Activity extends Model implements HasMedia
     $user->load('activity_privacy');
     $activity_privacy = $user->activity_privacy ? $user->activity_privacy->value : null;
 
-    $feeds = self::with(['post', 'user'])
-    ->where('type', 'post')
-    // post.author
+    $feeds = self::with(['activeable' => function ($morphTo) {
+      $morphTo->morphWith([
+          Post::class,
+          User::class,
+      ]);
+    }])
+    ->where('activeable_type', Post::class)
     ->whereHasMorph('activeable', [Post::class], function($q, $type) use($activity_privacy, $country, $state, $min_age, $max_age, $other_gender, $user){
       $q->whereHas('author', function($q) use($activity_privacy, $country, $state, $min_age, $max_age, $other_gender, $user){
         self::activity_filter($activity_privacy, $q, $user);
@@ -185,9 +188,8 @@ class Activity extends Model implements HasMedia
         self::gender($q, $other_gender);
       });
     })
-    ->orWhere('type', 'profile')
+    ->orWhere('activeable_type', User::class)
     ->whereHasMorph('activeable', [User::class], function($q) use($activity_privacy, $country, $state, $min_age, $max_age, $other_gender, $user){
-    // ->whereHas('user', function($q) use($activity_privacy, $country, $state, $min_age, $max_age, $other_gender, $user){
       self::activity_filter($activity_privacy, $q, $user);
       self::age($q, $min_age, $max_age);
       self::gender($q, $other_gender);
@@ -196,14 +198,13 @@ class Activity extends Model implements HasMedia
     $user->withLiked($feeds, true);
 
     if ($search) {
-      // $feeds = self::search($search);
-      $feeds->whereHas('post', function($q) use($search){
+      $feeds->whereHasMorph('activeable', [Post::class], function($q) use($search){
         $q->where('text', 'LIKE', '%'.$search.'%');
       })
-      ->orWhereHas('user', function($q) use($search){
+      ->orWhereHasMorph('activeable', [User::class], function($q) use($search){
         $q->where('name', 'LIKE', '%'.$search.'%');
       })
-      ->orWhereHas('post.author', function($q) use($search){
+      ->orWhereHasMorph('activeable', [Post::class => ['author']], function($q) use($search){
         $q->where('name', 'LIKE', '%'.$search.'%');
       });
     }
@@ -227,13 +228,13 @@ class Activity extends Model implements HasMedia
 
   public function details(User $user, $loaded = false){
     if (!$loaded) {
-      $this->load(['post', 'post.author', 'user']);
+      $this->load(['activeable'], [ User::class, Post::class => ['author']]);
     }
-    if ($this->type == 'post') {
-      $this->text = $this->post->text;
-      $this->author = $this->post->author->withPhotoUrl()->withUserRequestStatus($user);
+    if ($this->activeable_type == Post::class) {
+      $this->text = $this->activeable->text;
+      $this->author = $this->activeable->author->withPhotoUrl()->withUserRequestStatus($user);
     } else {
-      $this->author = $this->user->withPhotoUrl()->withUserRequestStatus($user);
+      $this->author = $this->activeable->withPhotoUrl()->withUserRequestStatus($user);
     }
     return $this->withPhotoUrl()->withTimeElapsed();
   }
@@ -242,11 +243,10 @@ class Activity extends Model implements HasMedia
 
   }
 
-  public static function getActionText($request, $type, $content_id){
+  public static function getActionText($request, $type, $activeable){
     if ($type == 'profile' || $type == 'images'){
-      $user = User::find($content_id);
-      if ($user) {
-        $gender = $user->gender === 'male' ? 'his' : 'her';
+      if ($activeable) {
+        $gender = $activeable->gender === 'male' ? 'his' : 'her';
       }
     }
 
@@ -255,6 +255,7 @@ class Activity extends Model implements HasMedia
     $images = $type == 'images' ? $request->image : $request->images;
     $verb = $type == 'images' ? 'Added' : 'Posted';
     $append = $type == 'images' ? " to $gender profile" : '';
+
     if ($type == 'post' || $type == 'images') {
       switch ($request) {
         case (!$text && count($images) == 1):
@@ -284,8 +285,7 @@ class Activity extends Model implements HasMedia
       switch ($type) {
         case ($type === 'profile'):
           // $user = User::find($content_id);
-          if ($user) {
-            // $gender = $user->gender === 'male' ? 'his' : 'her';
+          if ($activeable) {
             $action = "Changed $gender Profile Photo";
           }
           break;
@@ -295,18 +295,23 @@ class Activity extends Model implements HasMedia
     return $action;
   }
 
-  public static function addNew(String $type, $request, $content_id, $images = false, $action = false){
-    $action = $action ? $action : self::getActionText($request, $type, $content_id);
+  public static function addNew(String $type, $request, $activeable, $images = false, $action = false){
+    $action = $action ? $action : self::getActionText($request, $type, $activeable);
     $type = $type == 'images' ? 'profile' : $type;
-    $activity = self::create([
-      'content_id' => $content_id,
+
+    $activity = [
       'action' => $action,
-      'type' => $type,
-    ]);
+    ];
+    if ($type == 'profile' || $type == 'images') {
+      $activity = $activeable->activities()->create($activity);
+    } else if($type == 'post') {
+      $activity = $activeable->activity()->create($activity);
+    }
 
     if ($images) {
-      $activity->addImages($images, $type);
+      $activity->addImages($images);
     }
+    BroadcastNewPost::dispatch($activity);
 
     // $activity->load(['post.author', 'user']);
     //
@@ -319,7 +324,6 @@ class Activity extends Model implements HasMedia
     // $activity->withPhotoUrl()->withTimeElapsed();
 
     // event(new \App\Events\NewPost($activity));
-    BroadcastNewPost::dispatch($activity);
 
     return $activity;
   }
@@ -355,11 +359,13 @@ class Activity extends Model implements HasMedia
     return $this->morphTo();
   }
 
-  public function post(){
-    return $this->activeable()->where('activeable_type', Post::class);
-  }
-
-  public function user(){
-    return $this->activeable()->where('activeable_type', Post::class);
-  }
+  // public function post(){
+  //   return $this->load(['activeable'], [Post::class]);
+  //   // where('activeable_type', Post::class);
+  // }
+  //
+  // public function user(){
+  //   return $this->load(['activeable'], [ User::class]);
+  //   // where('activeable_type', User::class);
+  // }
 }

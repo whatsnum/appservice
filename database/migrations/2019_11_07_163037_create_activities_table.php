@@ -17,7 +17,6 @@ class CreateActivitiesTable extends Migration
             $table->bigIncrements('id');
             $table->morphs('activeable');
             $table->string('action');
-            $table->string('type');
             $table->timestamps();
         });
 

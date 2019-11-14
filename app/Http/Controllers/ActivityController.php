@@ -14,8 +14,8 @@ class ActivityController extends Controller
      */
     public function index(Request $request)
     {
-      $feeds = Activity::feeds($request);
-      return ['status' => true, 'feeds' => $feeds];
+      $activities = Activity::feeds($request);
+      return ['status' => true, 'activities' => $activities];
     }
 
     /**
