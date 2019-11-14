@@ -383,7 +383,7 @@ class UserController extends Controller
         Activity::addNew('profile', $request, $user, $image);
       }
       if ($user) {
-        $user = $user->myDetails();
+        $user->myDetails();
       }
       return ['status'=>true,'msg'=>trans('messages.msg_update_profile'),'user'=>$user, 'image' => is_array($image) ? $image : $image, 'type' => $type];
     }
