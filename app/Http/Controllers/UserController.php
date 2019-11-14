@@ -10,6 +10,7 @@ use App\Plan;
 use App\Setting;
 use App\Media;
 use App\Activity;
+use App\UserMeta;
 
 class UserController extends Controller
 {
@@ -304,30 +305,29 @@ class UserController extends Controller
   //   return response()->json(['success' => $user], $this-> successStatus);
   // }
   //
-  // public function update(Request $request, $id) {
-  //   $user = User::findOrFail($id);
-  //   $updates = $request->all();
-  //   $keys = array_keys($updates);
-  //   $settings = ['job_title', 'activity_privacy', 'relationship_status', 'education', 'company'];
-  //   $arr = array_intersect($keys, $settings);
-  //   if ($arr) {
-  //     foreach ($arr as $value) {
-  //       $name = $value;
-  //       break;
-  //     }
-  //     $value = $request->$name;
-  //
-  //     $update = UserMetas::updateMeta($user, $name, $value);
-  //   } else {
-  //     $update = $user->update($updates);
-  //     $user->myDetails();
-  //   }
-  //   return response()->json([
-  //       'status' => !!$update,
-  //       'user' => $user
-  //   ], 201);
-  // }
-  //
+  public function update(Request $request) {
+    $user = $request->user();
+    $updates = $request->all();
+    $keys = array_keys($updates);
+    $settings = ['job_title', 'activity_privacy', 'relationship_status', 'education', 'company'];
+    $arr = array_intersect($keys, $settings);
+    if ($arr) {
+      foreach ($arr as $value) {
+        $name = $value;
+        break;
+      }
+      $value = $request->$name;
+
+      $update = UserMeta::updateMeta($user, $name, $value);
+    } else {
+      $update = $user->update($updates);
+      $user->myDetails();
+    }
+    return response()->json([
+        'status' => !!$update,
+        'user' => $user
+    ], 201);
+  }
 
   //
   public function notificationData($user){
@@ -690,83 +690,9 @@ class UserController extends Controller
   //   }
   // }
   //
-  // public function toggleDirectMessage(Request $request){
-  //   return ['user' => $request->user->toggleDirectMessage()];
-  // }
+  public function toggleDirectMessage(Request $request){
+    $request->validate(['bool' => 'required']);
+    return ['user' => $request->user()->toggleDirectMessage($request->bool)];
+  }
   //
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

@@ -73,14 +73,14 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::resource('posts', 'PostController');
     Route::resource('activities', 'ActivityController');
 //     // Route::resource('countries', 'ActivityController');
-//     Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
+    Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
     Route::post('image_upload', 'UserController@uploadImage');
 //     Route::get('users/new', 'UserRequestController@new_users');
 //     Route::get('users/state/random', 'UserRequestController@random_users');
 //     Route::get('users/valid', 'UserController@validIds');
 //     Route::post('users/like', 'UserController@like');
 //     Route::post('users/regard', 'UserController@regard');
-//     Route::resource('users', 'UserController');
+    Route::resource('users', 'UserController');
 //     Route::resource('reports', 'PostReportController');
 //     Route::resource('settings', 'SettingController');
 //     Route::post('settings/change', 'SettingController@change');

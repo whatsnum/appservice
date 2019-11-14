@@ -19,6 +19,7 @@ use App\States;
 use App\UserRequest;
 use App\Group;
 use App\Activity;
+use App\Setting;
 use Carbon\Carbon;
 
 class User extends Authenticatable implements HasMedia
@@ -572,13 +573,15 @@ class User extends Authenticatable implements HasMedia
     //   $check_request_data_num_row = $check_request_data->count();
     // 	return $check_request_data_num_row;
     // }
-    //
-    // public function toggleDirectMessage(){
-    //   $this->direct_message = !$this->direct_message;
-    //   $this->save();
-    //   return $this->myDetails();
-    // }
-    //
+
+    public function toggleDirectMessage($bool){
+      Setting::updateSetting($this, 'direct_message', $bool);
+      // $this->direct_message = !$this->direct_message;
+      // $this->save();
+      return $this;
+      // ->myDetails();
+    }
+
     public function registerMediaCollections(Media $media = null){
       $this->addMediaCollection('avatar')
       ->acceptsFile(function (File $file) {
