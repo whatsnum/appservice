@@ -36,24 +36,17 @@ class ReportController extends Controller
     public function store(Request $request)
     {
       $request->validate([
-        'reportable_id'   => 'required',
+        'reportable_id'     => 'required',
         'reportable_type'   => 'required',
-        'comment'         => 'required',
+        'comment'           => 'required',
       ]);
 
-      $reportable_id  = $request->reportable_id;
+      $reportable_id    = $request->reportable_id;
       $reportable_type  = $request->reportable_type;
-      // $content_id  = $request->content_id;
-      $comment         = $request->comment;
-      // $type            = $request->type;
-      // if ($request->content_id) {
-      //   $type = $type::findOrFail();
-      // } else {
-        $user = $request->user();
-      // }
+      $comment          = $request->comment;
+      $user             = $request->user();
 
       return $user->reports()->create([
-        // 'user_id'           => $user->id,
         'reportable_id'     => $reportable_id,
         'reportable_type'   => $reportable_type,
         'comment'           => $comment,

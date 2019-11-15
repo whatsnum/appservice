@@ -216,24 +216,20 @@ class UserController extends Controller
   //   return User::whereIn('user_id', $request->ids)->pluck('user_id');
   // }
   //
-  // public function like(Request $request){
-  //   $request->validate([
-  //     'other_user_id' => 'required',
-  //   ]);
-  //
-  //   $other_user = User::findOrFail($request->other_user_id);
-  //   $user = $request->user;
-  //
-  //   // check duplicate
-  //   $sent = $user->sent_notifications()->where('action', 'like_profile')->where('other_user_id', $other_user->user_id)->first();
-  //   if ($sent) {
-  //     return ['status' => false, 'msg' => 'Already Liked User Profile'];
-  //   }
-  //
-  //   $notification_arr[] = UserNotification::makeLikeProfile($request->user, $other_user);
-  //
-  //   return ['notification_arr' => $notification_arr, 'status' => !!$notification_arr, 'msg' => $notification_arr ? 'Profile Liked' : 'Error Occured'];
-  // }
+  public function like(Request $request, User $other_user){
+    // $other_user = User::findOrFail($request->other_user_id);
+    $user = $request->user();
+
+    // check duplicate
+    $sent = $user->sent_notifications()->where('action', 'like_profile')->where('other_user_id', $other_user->id)->first();
+    if ($sent) {
+      return ['status' => false, 'msg' => 'Already Liked User Profile'];
+    }
+
+    $notifications[] = Notification::makeLikeProfile($user, $other_user);
+
+    return ['notifications' => $notifications, 'status' => !!$notifications, 'msg' => $notifications ? 'Profile Liked' : 'Error Occured'];
+  }
   //
   // public function regard(Request $request){
   //   $request->validate([

@@ -675,7 +675,7 @@ class User extends Authenticatable implements HasMedia
     }
 
     public function sent_notifications(){
-      return $this->hasMany(UserNotificationMessage::class, 'user_id');
+      return $this->hasMany(NotificationMessage::class, 'user_id');
     }
 
     public function received_notifications(){

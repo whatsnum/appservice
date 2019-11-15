@@ -78,7 +78,7 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::get('users/new', 'UserRequestController@new_users');
 //     Route::get('users/state/random', 'UserRequestController@random_users');
 //     Route::get('users/valid', 'UserController@validIds');
-//     Route::post('users/like', 'UserController@like');
+    Route::post('users/like/{other_user}', 'UserController@like');
 //     Route::post('users/regard', 'UserController@regard');
     Route::resource('users', 'UserController');
     Route::resource('reports', 'ReportController');
