@@ -639,18 +639,16 @@ class User extends Authenticatable implements HasMedia
     }
 
     public function reports(){
-      return $this->morphMany(Report::class, 'reportable');
+      return $this->hasMany(Report::class);
     }
 
     public function reported(){
-      return $this->hasMany(PostReport::class, 'other_user_id');
+      return $this->morphMany(Report::class, 'reportable');
     }
 
     public function reported_profile(){
       return $this->hasMany(PostReport::class, 'content_id');
     }
-
-
 
     public function metas(){
       return $this->hasMany(UserMeta::class);

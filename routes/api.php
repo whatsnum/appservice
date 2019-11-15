@@ -81,7 +81,7 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::post('users/like', 'UserController@like');
 //     Route::post('users/regard', 'UserController@regard');
     Route::resource('users', 'UserController');
-//     Route::resource('reports', 'PostReportController');
+    Route::resource('reports', 'ReportController');
 //     Route::resource('settings', 'SettingController');
 //     Route::post('settings/change', 'SettingController@change');
 //     Route::get('mail/support/view', 'MailingController@view');
