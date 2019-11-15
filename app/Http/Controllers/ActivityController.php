@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Activity;
 use Illuminate\Http\Request;
+use App\Post;
 
 class ActivityController extends Controller
 {
@@ -140,10 +141,9 @@ class ActivityController extends Controller
     {
       $del = [];
       $post = false;
-      if ($activity->type == 'profile') {
-        $post = $activity->forceDelete();
-      } else {
-        $post = Post::where('id', $activity->content_id)->first();
+      $type = $activity->activeable_type;
+      if ($activity->activeable_type == Post::class) {
+        $post = $activity->activeable;
         if ($post) {
           $post->forceDelete();
           if ($post) {
@@ -154,9 +154,10 @@ class ActivityController extends Controller
             }
           }
         }
+      } else {
+        $post = $activity->forceDelete();
       }
 
-
-      return [ 'status' => $post, 'debug' => $del, 'msg' => $post ? 'Post Successfully Deleted' : "Post Could Not Be Deleted" ];
+      return [ 'status' => !!$post, 'debug' => $del, 'msg' => $post ? 'Post Successfully Deleted' : "Post Could Not Be Deleted" ];
     }
 }

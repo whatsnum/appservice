@@ -639,7 +639,7 @@ class User extends Authenticatable implements HasMedia
     }
 
     public function reports(){
-      return $this->hasMany(PostReport::class, 'user_id');
+      return $this->morphMany(Report::class, 'reportable');
     }
 
     public function reported(){
