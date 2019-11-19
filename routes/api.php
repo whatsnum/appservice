@@ -71,6 +71,7 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::get('post_catgories', 'CategoryController@post_catgories');
 //     Route::get('group_catgories', 'CategoryController@group_catgories');
 //     Route::resource('posts', 'PostController');
+    Route::resource('interests', 'InterestController');
     Route::resource('activities', 'ActivityController');
 //     // Route::resource('countries', 'ActivityController');
     Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');

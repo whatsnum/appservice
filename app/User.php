@@ -674,6 +674,10 @@ class User extends Authenticatable implements HasMedia
       return $this->hasMany(UserPlan::class);
     }
 
+    public function interests(){
+      return $this->belongsToMany(Interest::class, 'interest_users')->withTimestamps();
+    }
+
     public function sent_notifications(){
       return $this->hasMany(NotificationMessage::class, 'user_id');
     }

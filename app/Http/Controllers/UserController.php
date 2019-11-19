@@ -89,11 +89,20 @@ class UserController extends Controller
      *
      */
   public function register(Request $request) {
+    // $request->validate([
+    //   'name'             => 'required',
+    //   'age'              => 'required',
+    //   'gender'           => 'required',
+    //   'interest_ids'     => 'required',
+    //   'other_gender'     => 'required',
+    // ]);
+
     $user_id          = $request->user_id;
     $user             = User::findOrFail($user_id);
     $name             = $request->name;
     $age              = $request->age;
     $gender           = $request->gender;
+    $interest_ids     = $request->interest_ids;
     $other_gender     = $request->other_user_gender;
     $min_age          = 17;//$request->other_user_min_age;
     $max_age          = 70;//$request->other_user_max_age;
@@ -106,7 +115,7 @@ class UserController extends Controller
         'name'              => $name,
         'age'               => $age,
         'gender'            => $gender,
-        'profile_step'      => 3
+        'profile_step'      => 4
       ]);
     }
 
@@ -127,12 +136,17 @@ class UserController extends Controller
         }
       }
       $update = array_merge($update, [
-        // 'interest'            => $interest,
         'other_user_min_age'  => 17,
         'other_user_max_age'  => 70,
         'other_user_gender'   => 'both',
-        // 'plan_id'             => isset($select_plan->id) ? $select_plan->plan_id : 1,
-        'profile_step'        => 4,
+        'profile_step'        => 5,
+      ]);
+    }
+
+    if ($interest_ids) {
+      $user->interests()->attach($interest_ids);
+      $update = array_merge($update, [
+        'profile_step'        => 5,
       ]);
     }
 
