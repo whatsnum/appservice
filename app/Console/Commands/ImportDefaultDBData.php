@@ -42,5 +42,7 @@ class ImportDefaultDBData extends Command
       DB::unprepared(file_get_contents(base_path('database/defaults/countries.sql')));
       DB::unprepared(file_get_contents(base_path('database/defaults/plan.sql')));
       DB::unprepared(file_get_contents(base_path('database/defaults/states.sql')));
+      DB::unprepared(file_get_contents(base_path('database/defaults/interests.sql')));
+      DB::unprepared(file_get_contents(base_path('database/defaults/job_titles.sql')));
     }
 }
