@@ -21,8 +21,8 @@ class CreateUsersTable extends Migration
             $table->bigInteger('phone');
             $table->string('age', 2)->nullable();
             $table->date('dob')->nullable();
-            $table->integer('other_user_min_age')->nullable();
-            $table->integer('other_user_max_age')->nullable();
+            $table->integer('other_user_min_age')->default(17);
+            $table->integer('other_user_max_age')->default(70);
             $table->string('gender', 10)->nullable();
             $table->string('other_user_gender', 10)->nullable();
             // $table->boolean('direct_message')->default(false);
