@@ -245,15 +245,15 @@ class User extends Authenticatable implements HasMedia
       return ['success' => true, 'images' => $image_url, 'image' => $file_name, 'thumb' => $thumb];
     }
 
-    // public static function distance($query, $latitude, $longitude){
-    //   $latName = 'lat';
-    //   $lonName = 'lng';
-    //   $calc = 1.1515 * 1.609344;
-    //
-    //   $sql = "((ACOS(SIN($latitude * PI() / 180) * SIN($latName * PI() / 180) + COS($latitude * PI() / 180) * COS($latName * PI() / 180) * COS(($longitude - $lonName ) * PI() / 180)) * 180 / PI()) * 60 * $calc) as distance";
-    //   $query->selectRaw("*, ".$sql);
-    //   return $query;
-    // }
+    public static function distance($query, $latitude, $longitude){
+      $latName = 'lat';
+      $lonName = 'lng';
+      $calc = 1.1515 * 1.609344;
+
+      $sql = "((ACOS(SIN($latitude * PI() / 180) * SIN($latName * PI() / 180) + COS($latitude * PI() / 180) * COS($latName * PI() / 180) * COS(($longitude - $lonName ) * PI() / 180)) * 180 / PI()) * 60 * $calc) as distance";
+      $query->selectRaw("*, ".$sql);
+      return $query;
+    }
     //
     // public function deleteMyActivities(){
     //   $activities = $this->activities;
@@ -270,77 +270,105 @@ class User extends Authenticatable implements HasMedia
     //   // $this->activities()->forceDelete();
     // }
     //
-    // private function withSearch($search, $stmt){
-    //   if ($search) {
-    //     // $stmt->search($search);
-    //     $stmt->where('name', 'LIKE', '%'.$search.'%')
-    //     ->orWhere('gender', 'LIKE', '%'.$search.'%')
-    //     ->orWhere('phone', 'LIKE', '%'.$search.'%')
-    //     ->orWhere('interest', 'LIKE', '%'.$search.'%')
-    //     ->orWhere('state', 'LIKE', '%'.$search.'%')
-    //     ->orWhere('city', 'LIKE', '%'.$search.'%')
-    //     ->orWhere('country', 'LIKE', '%'.$search.'%');
-    //   }
-    // }
+    private function withSearch($search, $stmt){
+      if ($search) {
+        // $stmt->search($search);
+        $stmt->where('name', 'LIKE', '%'.$search.'%')
+        ->orWhere('gender', 'LIKE', '%'.$search.'%')
+        // ->orWhere('phone', 'LIKE', '%'.$search.'%')
+        // interest and job title
+        // ->orWhere('interest', 'LIKE', '%'.$search.'%')
+        // ->orWhere('interest', 'LIKE', '%'.$search.'%')
+
+        ->orWhere('state', 'LIKE', '%'.$search.'%')
+        ->orWhere('city', 'LIKE', '%'.$search.'%')
+        ->orWhere('country', 'LIKE', '%'.$search.'%');
+      }
+    }
     //
-    // public function withFilters($request, $stmt){
-    //   $state                = $request->state; //$this->state;
-    //   $country              = $request->country; //$this->country;
-    //   $direct_message       = $request->direct_message;
-    //   $interest             = $request->interest;
-    //   $relationship_status  = $request->relationship_status;
+
+    public function withMyLocation($user, $stmt){
+      $state                = $user->state; //$this->state;
+      $country              = $user->country; //$this->country;
+
+      $stmt->where('state', $state)->where('country', $country);
+
+      return $stmt;
+    }
+
+    public function withFilters($request, $stmt){
+      $state                = $request->state; //$this->state;
+      $country              = $request->country; //$this->country;
+      $direct_message       = $request->direct_message;
+      $interest             = $request->interest;
+      $relationship_status  = $request->relationship_status;
+      $location             = $request->location;
+
+      if ($location) {
+        if ($location == 'country') {
+          $stmt->where('country', $this->country)->where('state', '!=', $this->state);
+        }
+        if ($location == 'world') {
+          $stmt->where('country', '!=', $this->country);
+        }
+        // $stmt->where('state', $state);
+      }
+
+      // if ($state) {
+      //   $stmt->where('state', $state);
+      // }
+      // if ($country) {
+      //   $stmt->where('country', $country)->where('state', '!=', $this->state);
+      // }
+      // if ($direct_message) {
+      //   $stmt->where('direct_message', true);
+      // }
+      // if ($relationship_status) {
+      //   $stmt->whereHas('user_metas', function($q) use($relationship_status){
+      //     $q->where('name', 'relationship_status')->where('value', $relationship_status);
+      //   });
+      // }
+      // if ($interest) {
+      //   $stmt->where('interest', $interest);
+      // }
+
+      return $stmt;
+    }
     //
-    //   if ($state) {
-    //     $stmt->where('state', $state);
-    //   }
-    //   if ($country) {
-    //     $stmt->where('country', $country);
-    //   }
-    //   if ($direct_message) {
-    //     $stmt->where('direct_message', true);
-    //   }
-    //   if ($relationship_status) {
-    //     $stmt->whereHas('user_metas', function($q) use($relationship_status){
-    //       $q->where('name', 'relationship_status')->where('value', $relationship_status);
-    //     });
-    //   }
-    //   if ($interest) {
-    //     $stmt->where('interest', $interest);
-    //   }
-    //
-    //   return $stmt;
-    // }
-    //
-    // public function Users($request){
-    //   $gender         = $this->gender;
-    //   $other_gender   = $this->other_user_gender;
-    //   $min_age        = $this->other_user_min_age;
-    //   $max_age        = $this->other_user_max_age;
-    //
-    //   $search         = $request->search;
-    //
-    //   $lat            = $this->lat;
-    //   $lng            = $this->lng;
-    //
-    //   $stmt = User::whereBetween('age', [$min_age, $max_age])->where('user_id', '!=', $this->user_id)
-    //   ->where('user_type', 'user')->where('delete_flag', 'no')->where('active_flag', 'active')
-    //   ->where('complete_profile', 'yes')
-    //   ->where('lat', '!=', NULL)->where('lng', '!=', NULL);
-    //
-    //   $this->withFilters($request, $stmt);
-    //
-    //   $stmt = User::distance($stmt, (string)$lat, (string)$lng)
-    //   ->orderBy('distance', 'ASC');
-    //
-    //   $this->withSearch($search, $stmt);
-    //
-    //   if ($other_gender === 'both') {
-    //     $stmt->whereIn('other_user_gender', [$gender, 'both']);
-    //   } else {
-    //     $stmt->where('gender', $other_gender)->whereIn('other_user_gender', ['both', $gender]);
-    //   }
-    //   return $stmt;
-    // }
+    public function Users($request){
+      $gender         = $this->gender;
+      $other_gender   = $this->other_user_gender;
+      $min_age        = $this->other_user_min_age;
+      $max_age        = $this->other_user_max_age;
+
+      $search         = $request->search;
+      $location       = $request->location;
+
+      $lat            = $this->lat;
+      $lng            = $this->lng;
+
+      $stmt = $this->whereBetween('age', [$min_age, $max_age])->where('id', '!=', $this->id)
+      ->where('profile_step', 100)
+      ->where('lat', '!=', NULL)->where('lng', '!=', NULL);
+
+      $this->withFilters($request, $stmt);
+
+      if (!$location) {
+        $this->withMyLocation($this, $stmt);
+      }
+
+      $stmt = $this->distance($stmt, (string)$lat, (string)$lng)
+      ->orderBy('distance', 'ASC');
+
+      $this->withSearch($search, $stmt);
+
+      if ($other_gender === 'both') {
+        $stmt->whereIn('gender', [$gender, $gender == 'male' ? 'female' : 'male']);
+      } else {
+        $stmt->where('gender', $other_gender);
+      }
+      return $stmt;
+    }
     //
     // public function usersWithRequestPhoto($users){
     //   if ($users) {

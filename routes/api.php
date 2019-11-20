@@ -45,6 +45,7 @@ Route::group(['middleware' => 'localization'], function(){
   Route::get('users/count', 'UserController@count');
 //   Route::post('users/auth_image_upload', 'UserController@authImageUpload');
 //
+
   Route::group(['middleware' => ['activated', 'auth:api']], function(){
 //     Route::get('get_my_receive_request.php', 'UserController@get_my_receive_request');
 //     Route::get('get_my_pending_sent_requests.php', 'UserController@get_my_pending_sent_requests');
@@ -71,6 +72,8 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::get('post_catgories', 'CategoryController@post_catgories');
 //     Route::get('group_catgories', 'CategoryController@group_catgories');
 //     Route::resource('posts', 'PostController');
+    Route::get('users/map', 'UserController@latlng');
+    Route::resource('users', 'UserController');
     Route::resource('job_titles', 'JobTitleController');
     Route::resource('interests', 'InterestController');
     Route::resource('activities', 'ActivityController');
@@ -78,11 +81,10 @@ Route::group(['middleware' => 'localization'], function(){
     Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
     Route::post('image_upload', 'UserController@uploadImage');
 //     Route::get('users/new', 'UserRequestController@new_users');
-//     Route::get('users/state/random', 'UserRequestController@random_users');
+    Route::get('users/state/random', 'UserRequestController@random_users');
 //     Route::get('users/valid', 'UserController@validIds');
     Route::post('users/like/{other_user}', 'UserController@like');
 //     Route::post('users/regard', 'UserController@regard');
-    Route::resource('users', 'UserController');
     Route::resource('reports', 'ReportController');
 //     Route::resource('settings', 'SettingController');
 //     Route::post('settings/change', 'SettingController@change');

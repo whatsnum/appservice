@@ -296,12 +296,24 @@ class UserController extends Controller
   //   return ['status' => true, 'msg' => 'Account Deleted Successfully'];
   // }
   //
-  // public function index(Request $request){
-  //   $user = $request->user;
-  //   $users = $user->Users($request)->paginate($request->pageSize ? $request->pageSize : 20);
-  //   $user->usersWithRequestPhoto($users->items());
-  //   return ['status' => true, 'users' => $users];
-  // }
+  public function index(Request $request){
+    $user = $request->user();
+
+    // $user = User::find(2801);
+    // $user = User::inRandomOrder()->first();
+
+
+    $users = $user->Users($request)->paginate($request->pageSize ? $request->pageSize : 20);
+    // $user->usersWithRequestPhoto($users->items());
+    return ['status' => true, 'users' => $users];
+  }
+
+  public function latlng(Request $request){
+    $user = $request->user();
+    // $user = User::find(2801);
+    $users = $user->Users($request)->get()->map->only(['lat', 'lng']);
+    return ['status' => true, 'users' => $users];
+  }
   //
 
   //
