@@ -103,6 +103,7 @@ class UserController extends Controller
     $age              = $request->age;
     $gender           = $request->gender;
     $interest_ids     = $request->interest_ids;
+    $job_title        = $request->job_title;
     $other_gender     = $request->other_user_gender;
     $min_age          = 17;//$request->other_user_min_age;
     $max_age          = 70;//$request->other_user_max_age;
@@ -150,9 +151,19 @@ class UserController extends Controller
       ]);
     }
 
-    $user->update($update);
+    if ($job_title) {
+      $update = array_merge($update, [
+        'profile_step'        => 6,
+      ]);
 
-    return ['status' => true,'user'=>$user, 'msg' =>trans('messages.msg_signup_succes'),'notifications' =>[]];
+      $user->updateMeta('job_title', $job_title, function() use($user, $update){
+        $user->update($update);
+      });
+    } else {
+      $user->update($update);
+    }
+
+    return ['status' => true, 'user'=>$user, 'msg' =>trans('messages.msg_signup_succes'),'notifications' => []];
   }
 
   public function updatePassCode(Request $request){
@@ -160,8 +171,8 @@ class UserController extends Controller
     $passcode = request('passcode');
 
     $user = Setting::updateSetting($user, 'passcode', $passcode, function($user){
-      if ($user && $user->profile_step < 6) {
-        $user->profile_step = 6;
+      if ($user && $user->profile_step < 7) {
+        $user->profile_step = 7;
         $user->save();
       }
     });
@@ -187,7 +198,7 @@ class UserController extends Controller
         $media_file = Media::uploadImage($image);
         // $user->uploadImage($image, $type, false, 'Joined WhatsNum');
         $user->uploadImage($media_file, $type, false, 'Joined WhatsNum');
-        $user->profile_step = 7;
+        $user->profile_step = 100;
         $user->save();
         $user->myDetails();
         // if ($type == 'profile') {

@@ -20,6 +20,7 @@ use App\UserRequest;
 use App\Group;
 use App\Activity;
 use App\Setting;
+use App\UserMeta;
 use Carbon\Carbon;
 
 class User extends Authenticatable implements HasMedia
@@ -45,6 +46,8 @@ class User extends Authenticatable implements HasMedia
      */
     protected $hidden = [
         'password', 'remember_token',
+        'email_verified_at',
+        'media', 'metas'
     ];
 
     /**
@@ -59,6 +62,10 @@ class User extends Authenticatable implements HasMedia
     // public function notifications(){
     //   return $this->hasMany(Notification::class);
     // }
+
+    public function updateMeta($name, $value){
+      return UserMeta::updateMeta($this, $name, $value);
+    }
 
     public static function generateRandomOTP($length = 6) {
       PHP_VERSION < '4.2.0' && mt_srand((double)microtime() * 1000000);

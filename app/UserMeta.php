@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserMeta extends Model
 {
-  protected $fillable = ['user_master_id', 'name', 'value'];
+  protected $fillable = ['user_id', 'name', 'value'];
 
   public static function updateMeta(User $user, $name, $value, $callback = false){
     $metas = $user->load(['metas' => function($q) use($name){
