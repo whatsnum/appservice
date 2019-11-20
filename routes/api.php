@@ -72,6 +72,7 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::get('post_catgories', 'CategoryController@post_catgories');
 //     Route::get('group_catgories', 'CategoryController@group_catgories');
 //     Route::resource('posts', 'PostController');
+    Route::get('users/state/random', 'UserRequestController@random_users');
     Route::get('users/map', 'UserController@latlng');
     Route::resource('users', 'UserController');
     Route::resource('job_titles', 'JobTitleController');
@@ -81,7 +82,6 @@ Route::group(['middleware' => 'localization'], function(){
     Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
     Route::post('image_upload', 'UserController@uploadImage');
 //     Route::get('users/new', 'UserRequestController@new_users');
-    Route::get('users/state/random', 'UserRequestController@random_users');
 //     Route::get('users/valid', 'UserController@validIds');
     Route::post('users/like/{other_user}', 'UserController@like');
 //     Route::post('users/regard', 'UserController@regard');

@@ -574,22 +574,20 @@ class User extends Authenticatable implements HasMedia
     //   ->where('complete_profile', 'yes')->inRandomOrder()->limit(3)->get();
     // }
     //
-    // public function myRandomUser(){
-    //   return $this->where("user_id", '!=', $this->user_id)->where("image", '!=', NULL)->where("image", "<>", '')
-    //   // ->where("state", $this->state)
-    //   ->where("user_type", 'user')->where("delete_flag", 'no')->where('active_flag', 'active')
-    //   ->where('complete_profile', 'yes')->inRandomOrder()->limit(10)->get();
-    // }
+    public function myRandomUser($request){
+      return $this->Users($request)
+      // whereHas('image')
+      ->inRandomOrder()->limit(10)->get();
+    }
     //
     // public static function countUsersInState($state){
     //   return self::where('state', $state)->where("user_type", 'user')->where("delete_flag", 'no')
     //   ->where('active_flag', 'active')->where('complete_profile', 'yes')->orderBy('user_id')->count()-1;
     // }
     //
-    // public static function countCompleteUsers(){
-    //   return self::where("user_type", 'user')->where("delete_flag", 'no')
-    //   ->where('active_flag', 'active')->where('complete_profile', 'yes')->orderBy('user_id')->count()-1;
-    // }
+    public function countCompleteUsers(){
+      return $this->where('profile_step', 100)->count()-1;
+    }
     //
     // public function getMyPlanId(){
     //   return Plan::where('delete_flag', 'no')->where('plan_id', $this->current_plan_id)->first();
