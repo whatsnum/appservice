@@ -40,17 +40,7 @@ class Notification extends Model
   public static function getUserPlayerId($user_id){
     $user = User::find($user_id);
     if ($user) {
-      return $user->oneSignalData();//self::where('user_id', $user_id)->where('player_id', '!=', NULL)->first();
-      // return $select_all;
-      // if ($select_all) {
-      //   $player_id = $select_all->player_id ;
-      //   if($player_id == '123456'){
-      //     $player_id = 'no';
-      //   }
-      // } else {
-      //   $player_id = 'no';
-      // }
-      // return $player_id;
+      return $user->oneSignalData();
     }
 
     return false;
@@ -77,7 +67,7 @@ class Notification extends Model
       {
         $player_id = self::getUserPlayerId($notificationData['action_data']['other_user_id']);
         if($player_id){
-          $notifications=array('player_id'=>$player_id->player_id, 'title'=>$notificationData['message']['title'], 'message'=>$notificationData['message']['message'], 'action_json'=>$notificationData['action_data']);
+          return ['player_id'=>$player_id->player_id, 'title'=>$notificationData['message']['title'], 'message'=>$notificationData['message']['message'], 'action_json'=>$notificationData['action_data']];
         }
       }
     }

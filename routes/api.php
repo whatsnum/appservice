@@ -78,6 +78,7 @@ Route::group(['middleware' => 'localization'], function(){
     Route::resource('job_titles', 'JobTitleController');
     Route::resource('interests', 'InterestController');
     Route::resource('activities', 'ActivityController');
+    Route::resource('user_requests', 'UserRequestController');
 //     // Route::resource('countries', 'ActivityController');
     Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
     Route::post('image_upload', 'UserController@uploadImage');
