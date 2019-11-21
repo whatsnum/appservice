@@ -38,7 +38,7 @@ class CreateUsersTable extends Migration
             // $table->enum('notification_status', ['on', 'off'])->default('on');
             $table->integer('profile_step')->default(1);
             // $table->integer('plan_id')->unsigned();
-            $table->enum('verfication', ['no', 'yes']);
+            $table->boolean('verfication')->default(false);
             $table->string('password')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();

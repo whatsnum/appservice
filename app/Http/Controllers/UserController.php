@@ -97,8 +97,8 @@ class UserController extends Controller
     //   'other_gender'     => 'required',
     // ]);
 
-    // $user_id          = $request->user_id;
-    $user             = $request->user();//User::findOrFail($user_id);
+    $user_id          = $request->user_id;
+    $user             = User::findOrFail($user_id);
     $name             = $request->name;
     $age              = $request->age;
     $gender           = $request->gender;
@@ -122,11 +122,11 @@ class UserController extends Controller
 
     // interest
     if ($interest_ids) {
-      $myPlan = $user->plan()->first(); //UserPlan::getUserPlan($user);
+      $myPlan = $user->plans()->first(); //UserPlan::getUserPlan($user);
       $select_plan = Plan::free();
       if (!$myPlan && $select_plan) {
         //----------insert plan
-        $user_plan = $user->plan()->create([
+        $user_plan = $user->plans()->create([
           'plan_id'           => $select_plan->id,
           'transaction_id'    => 0,
           'no_contact_use'    => $select_plan->no_of_contact,
@@ -293,10 +293,10 @@ class UserController extends Controller
   // }
   //
   public function index(Request $request){
-    // $user = $request->user();
+    $user = $request->user();
 
     // $user = User::find(2801);
-    $user = User::inRandomOrder()->first();
+    // $user = User::inRandomOrder()->first();
 
 
     $users = $user->Users($request)->paginate($request->pageSize ? $request->pageSize : 20);

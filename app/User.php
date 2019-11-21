@@ -362,7 +362,7 @@ class User extends Authenticatable implements HasMedia
       $this->withFilters($request, $stmt);
 
       if (!$location) {
-        // $this->withMyLocation($this, $stmt);
+        $this->withMyLocation($this, $stmt);
       }
 
       $this->withSearch($search, $stmt);
@@ -374,20 +374,19 @@ class User extends Authenticatable implements HasMedia
       if ($orderBy) {
         switch ($orderBy) {
           case 'job_title':
-            // $stmt->whereHas('job_title')->with('job_title')->orderBy('user_metas.value', 'ASC');
-            // whereHas('metas', function($q){
-            //   $q->where('name', 'job_title')->orderBy('value', 'ASC');
-            // })->with('job_title');
-            // leftJoin('user_metas', 'user_metas.user_id', '=', 'users.id')
-            // ->where('user_metas.name', 'job_title')
-            // ->with('job_title')
-            // ->orderBy('user_metas.value', 'ASC');
+            $stmt->select([
+              'user_metas.value as job_title',
+              'users.*'
+            ])
+            ->join('user_metas', 'user_metas.user_id', '=', 'users.id')
+            ->where('user_metas.name', 'job_title')
+            ->orderBy('user_metas.value', 'ASC');
             break;
+          // case 'name':
           default:
-            // code...
+            $stmt->orderBy($orderBy);
             break;
         }
-        // $stmt->orderBy($orderBy);
       } else {
         $stmt->orderBy('distance', 'ASC');
       }

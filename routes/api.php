@@ -46,7 +46,6 @@ Route::group(['middleware' => 'localization'], function(){
 //   Route::post('users/auth_image_upload', 'UserController@authImageUpload');
 //
 
-Route::resource('users', 'UserController');
   Route::group(['middleware' => ['activated', 'auth:api']], function(){
 //     Route::get('get_my_receive_request.php', 'UserController@get_my_receive_request');
 //     Route::get('get_my_pending_sent_requests.php', 'UserController@get_my_pending_sent_requests');
@@ -75,6 +74,7 @@ Route::resource('users', 'UserController');
 //     Route::resource('posts', 'PostController');
     Route::get('users/state/random', 'UserRequestController@random_users');
     Route::get('users/map', 'UserController@latlng');
+    Route::resource('users', 'UserController');
     Route::resource('job_titles', 'JobTitleController');
     Route::resource('interests', 'InterestController');
     Route::resource('activities', 'ActivityController');
