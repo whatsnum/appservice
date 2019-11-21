@@ -38,15 +38,15 @@ class AppReset extends Command
      */
     public function handle()
     {
-      // $output['freshDb'] = Artisan::call('migrate:fresh');
-      // $output['passportDb'] = Artisan::call('migrate', [
-      //   '--path' => 'vendor/laravel/passport/database/migrations', '--force' => true
-      // ]);
-      // $output['passportInstall'] = Artisan::call('passport:install');
-      // $output['ImportData'] = Artisan::call('db:import_default_data');
-      // $output['eventGen'] = Artisan::call('event:generate');
-      // $output['dbSeed'] = Artisan::call('db:seed');
-      $output['MigrateDB'] = Artisan::call('migrate');
+      $output['freshDb'] = Artisan::call('migrate:fresh');
+      $output['passportDb'] = Artisan::call('migrate', [
+        '--path' => 'vendor/laravel/passport/database/migrations', '--force' => true
+      ]);
+      $output['passportInstall'] = Artisan::call('passport:install');
+      $output['ImportData'] = Artisan::call('db:import_default_data');
+      $output['eventGen'] = Artisan::call('event:generate');
+      $output['dbSeed'] = Artisan::call('db:seed');
+      // $output['MigrateDB'] = Artisan::call('migrate');
 
       print_r($output);
     }

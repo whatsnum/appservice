@@ -4,6 +4,8 @@
 use App\User;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
+use App\Country;
+use App\State;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,17 +19,19 @@ use Illuminate\Support\Str;
 */
 
 $factory->define(User::class, function (Faker $faker) {
+  $country = Country::inRandomOrder()->first();
+  $state = $country->states()->inRandomOrder()->first();
     return [
       'name'                => $faker->userName,
       'email'               => $faker->unique()->safeEmail,
-      'phone_code'          => $faker->randomNumber(3),
+      'phone_code'          => $country->phonecode,//$faker->randomNumber(3),
       'phone'               => $faker->unique()->randomNumber(8),
       'age'                 => $faker->numberBetween(17, 70),
       'gender'              => $faker->randomElement(['male', 'female']),
-      'other_user_gender'   => $faker->randomElement(['male', 'female', 'both']),
+      // 'other_user_gender'   => $faker->randomElement(['male', 'female', 'both']),
       'city'                => $faker->city,
-      'state'               => $faker->state,
-      'country'             => $faker->country,
+      'state'               => $state->name,//$faker->state,
+      'country'             => $country->name,//$faker->country,
       'lat'                 => $faker->latitude($min = -90, $max = 90),     // 77.147489
       'lng'                 => $faker->longitude($min = -180, $max = 180),  // 86.211205
       'profile_step'        => 100,

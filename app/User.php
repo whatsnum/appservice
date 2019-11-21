@@ -285,6 +285,12 @@ class User extends Authenticatable implements HasMedia
         ->orWhere('country', 'LIKE', '%'.$search.'%');
       }
     }
+
+    public function withMyInterest($stmt, $interests){
+      return $stmt->whereHas('interests', function($q) use($interests){
+        $q->whereIn('name', $interests);
+      });
+    }
     //
 
     public function withMyLocation($user, $stmt){
@@ -299,9 +305,9 @@ class User extends Authenticatable implements HasMedia
     public function withFilters($request, $stmt){
       $state                = $request->state; //$this->state;
       $country              = $request->country; //$this->country;
-      $direct_message       = $request->direct_message;
-      $interest             = $request->interest;
-      $relationship_status  = $request->relationship_status;
+      // $direct_message       = $request->direct_message;
+      // $interest             = $request->interest;
+      // $relationship_status  = $request->relationship_status;
       $location             = $request->location;
 
       if ($location) {
@@ -336,37 +342,56 @@ class User extends Authenticatable implements HasMedia
     }
     //
     public function Users($request){
-      $gender         = $this->gender;
-      $other_gender   = $this->other_user_gender;
-      $min_age        = $this->other_user_min_age;
-      $max_age        = $this->other_user_max_age;
-
+      $orderBy        = $request->orderBy;
+      $gender         = $request->gender;
       $search         = $request->search;
       $location       = $request->location;
-
       $lat            = $this->lat;
       $lng            = $this->lng;
+      $interests      = $this->interests->pluck('name');
 
-      $stmt = $this->whereBetween('age', [$min_age, $max_age])->where('id', '!=', $this->id)
+      $stmt = $this
+      ->where('users.id', '!=', $this->id)
       ->where('profile_step', 100)
       ->where('lat', '!=', NULL)->where('lng', '!=', NULL);
+
+      $this->distance($stmt, (string)$lat, (string)$lng);
+
+      $this->withMyInterest($stmt, $interests);
 
       $this->withFilters($request, $stmt);
 
       if (!$location) {
-        $this->withMyLocation($this, $stmt);
+        // $this->withMyLocation($this, $stmt);
       }
-
-      $stmt = $this->distance($stmt, (string)$lat, (string)$lng)
-      ->orderBy('distance', 'ASC');
 
       $this->withSearch($search, $stmt);
 
-      if ($other_gender === 'both') {
-        $stmt->whereIn('gender', [$gender, $gender == 'male' ? 'female' : 'male']);
-      } else {
-        $stmt->where('gender', $other_gender);
+      if ($gender) {
+        $stmt->where('gender', $gender);
       }
+
+      if ($orderBy) {
+        switch ($orderBy) {
+          case 'job_title':
+            // $stmt->whereHas('job_title')->with('job_title')->orderBy('user_metas.value', 'ASC');
+            // whereHas('metas', function($q){
+            //   $q->where('name', 'job_title')->orderBy('value', 'ASC');
+            // })->with('job_title');
+            // leftJoin('user_metas', 'user_metas.user_id', '=', 'users.id')
+            // ->where('user_metas.name', 'job_title')
+            // ->with('job_title')
+            // ->orderBy('user_metas.value', 'ASC');
+            break;
+          default:
+            // code...
+            break;
+        }
+        // $stmt->orderBy($orderBy);
+      } else {
+        $stmt->orderBy('distance', 'ASC');
+      }
+
       return $stmt;
     }
     //
@@ -673,6 +698,10 @@ class User extends Authenticatable implements HasMedia
 
     public function reports(){
       return $this->hasMany(Report::class);
+    }
+
+    public function job_title(){
+      return $this->hasOne(UserMeta::class)->where('name', 'job_title');
     }
 
     public function reported(){

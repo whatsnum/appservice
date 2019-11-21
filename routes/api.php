@@ -46,6 +46,7 @@ Route::group(['middleware' => 'localization'], function(){
 //   Route::post('users/auth_image_upload', 'UserController@authImageUpload');
 //
 
+Route::resource('users', 'UserController');
   Route::group(['middleware' => ['activated', 'auth:api']], function(){
 //     Route::get('get_my_receive_request.php', 'UserController@get_my_receive_request');
 //     Route::get('get_my_pending_sent_requests.php', 'UserController@get_my_pending_sent_requests');
@@ -74,7 +75,6 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::resource('posts', 'PostController');
     Route::get('users/state/random', 'UserRequestController@random_users');
     Route::get('users/map', 'UserController@latlng');
-    Route::resource('users', 'UserController');
     Route::resource('job_titles', 'JobTitleController');
     Route::resource('interests', 'InterestController');
     Route::resource('activities', 'ActivityController');
@@ -111,6 +111,15 @@ Route::get('test', function(Request $request){
   $updates = $request->all();
   \App\Notification::DeviceTokenStore_1_Signal($user, 'android', "ee3c6b83-fc80-4d21-903a-3953659f878c");
   return $user;
+});
+Route::get('app/2019/reset', function(Request $request){
+//   shell_exec('composer dump-autolad');
+//   Artisan::call('config:cache');
+//   Artisan::call('config:clear');
+//   Artisan::call('cache:clear');
+//   Artisan::call('route:clear');
+//   Artisan::call('config:cache');
+  // Artisan::call('app:reset');
 });
 //
 // Route::get('cache-clear', function(Request $request){

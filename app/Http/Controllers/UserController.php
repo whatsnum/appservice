@@ -97,17 +97,17 @@ class UserController extends Controller
     //   'other_gender'     => 'required',
     // ]);
 
-    $user_id          = $request->user_id;
-    $user             = User::findOrFail($user_id);
+    // $user_id          = $request->user_id;
+    $user             = $request->user();//User::findOrFail($user_id);
     $name             = $request->name;
     $age              = $request->age;
     $gender           = $request->gender;
     $interest_ids     = $request->interest_ids;
     $job_title        = $request->job_title;
-    $other_gender     = $request->other_user_gender;
-    $min_age          = 17;//$request->other_user_min_age;
-    $max_age          = 70;//$request->other_user_max_age;
-    $interest         = 'New Friends';//$request->interest;
+    // $other_gender     = $request->other_user_gender;
+    // $min_age          = 17;//$request->other_user_min_age;
+    // $max_age          = 70;//$request->other_user_max_age;
+    // $interest         = 'New Friends';//$request->interest;
     $update = [];
 
     // update user name gender age
@@ -121,30 +121,26 @@ class UserController extends Controller
     }
 
     // interest
-    if ($interest || $min_age) {
-      $myPlan = UserPlan::getUserPlan($user);
-      $select_plan = Plan::free();
-      if (!$myPlan) {
-        if ($select_plan) {
-          //----------insert plan
-          $user_plan = $user->plan()->create([
-            'plan_id'           => $select_plan->id,
-            'transaction_id'    => 0,
-            'no_contact_use'    => $select_plan->no_of_contact,
-            'start_plan_date'   => date("Y-m-d"),
-            'end_plan_date'     => date('Y-m-d', strtotime("+30 days")),
-          ]);
-        }
-      }
-      $update = array_merge($update, [
-        'other_user_min_age'  => 17,
-        'other_user_max_age'  => 70,
-        'other_user_gender'   => 'both',
-        'profile_step'        => 5,
-      ]);
-    }
-
     if ($interest_ids) {
+      $myPlan = $user->plan()->first(); //UserPlan::getUserPlan($user);
+      $select_plan = Plan::free();
+      if (!$myPlan && $select_plan) {
+        //----------insert plan
+        $user_plan = $user->plan()->create([
+          'plan_id'           => $select_plan->id,
+          'transaction_id'    => 0,
+          'no_contact_use'    => $select_plan->no_of_contact,
+          'start_plan_date'   => date("Y-m-d"),
+          'end_plan_date'     => date('Y-m-d', strtotime("+30 days")),
+        ]);
+      }
+      // $update = array_merge($update, [
+      //   'other_user_min_age'  => 17,
+      //   'other_user_max_age'  => 70,
+      //   'other_user_gender'   => 'both',
+      //   'profile_step'        => 5,
+      // ]);
+
       $user->interests()->attach($interest_ids);
       $update = array_merge($update, [
         'profile_step'        => 5,
@@ -297,15 +293,15 @@ class UserController extends Controller
   // }
   //
   public function index(Request $request){
-    $user = $request->user();
+    // $user = $request->user();
 
     // $user = User::find(2801);
-    // $user = User::inRandomOrder()->first();
+    $user = User::inRandomOrder()->first();
 
 
     $users = $user->Users($request)->paginate($request->pageSize ? $request->pageSize : 20);
     // $user->usersWithRequestPhoto($users->items());
-    return ['status' => true, 'users' => $users];
+    return ['status' => true, 'users' => $users, 'in' => $user->interests->pluck('name'), 'user' => $user];
   }
 
   public function latlng(Request $request){
