@@ -622,7 +622,6 @@ class UserController extends Controller
   public function show(Request $request, User $user){
     $otherUser = $user->myDetails();
     $user = $request->user();
-    // dd($user->interests->pluck('id'));
     $otherUser->withUserRequestStatus($user)
     ->withInterestsCount($user)
     ->withMessageMediaCount($user);

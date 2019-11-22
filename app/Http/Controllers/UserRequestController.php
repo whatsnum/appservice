@@ -134,7 +134,6 @@ class UserRequestController extends Controller
       $this->authorize('update', $userRequest);
 
       // check relationship
-      // dd($user->isContact($otherUser));
       if ($user->isContact($otherUser)) {
         return ['status' => false, 'msg' => trans('msg.is_contact')];
       }
