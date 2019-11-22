@@ -65,6 +65,13 @@ Route::group(['middleware' => 'localization'], function(){
     Route::get('contacts/users/blocked', 'ContactController@blocked');
     Route::post('contacts/{otherUser}/block', 'ContactController@block');
     Route::delete('contacts/{otherUser}/unblock', 'ContactController@unBlock');
+    // notifications
+    Route::post('notifications/read/{notification_message}', 'NotificationMessageController@read');
+    Route::get('notifications', 'NotificationMessageController@index');
+    Route::get('notifications/unread/count', 'NotificationMessageController@unreadCount');
+    // settings
+    Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
+    Route::post('image_upload', 'UserController@uploadImage');
 
 //     Route::get('get_my_receive_request.php', 'UserController@get_my_receive_request');
 //     Route::get('get_my_pending_sent_requests.php', 'UserController@get_my_pending_sent_requests');
@@ -78,9 +85,6 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::get('search_modal.php', 'UserController@search_modal');
 //     Route::get('search_location.php', 'UserController@search_location');
 //     Route::get('get_all_notification.php', 'NotificationMessageController@get_all_notification');
-    Route::post('notifications/read/{notification_message}', 'NotificationMessageController@read');
-    Route::get('notifications', 'NotificationMessageController@index');
-    Route::get('notifications/unread/count', 'NotificationMessageController@unreadCount');
 //     Route::get('insert_temp_plan.php', 'PlanController@insert_temp_plan');
 //     Route::get('send_purchase_plan_notification.php', 'PlanController@send_purchase_plan_notification');
 //     Route::post('swap_profile_image.php', 'UserController@swap_profile_image');
@@ -92,8 +96,6 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::get('group_catgories', 'CategoryController@group_catgories');
 //     Route::resource('posts', 'PostController');
 //     // Route::resource('countries', 'ActivityController');
-    Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
-    Route::post('image_upload', 'UserController@uploadImage');
 //     Route::get('users/new', 'UserRequestController@new_users');
 //     Route::get('users/valid', 'UserController@validIds');
 //     Route::post('users/regard', 'UserController@regard');
