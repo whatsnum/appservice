@@ -46,7 +46,7 @@ class User extends Authenticatable implements HasMedia
     protected $hidden = [
         'password', 'remember_token',
         'email_verified_at',
-        'media', 'metas'
+        'media'
     ];
 
     /**
@@ -107,17 +107,7 @@ class User extends Authenticatable implements HasMedia
     public function myDetails(){
       $this->load(['settings', 'plan']);
       $this->withPhotoUrl();
-      // ->withFeedsPhotoUrl();
       $this->withMetas();
-      // $plan = $this->plan();
-
-      // Plan::getUserPlanId($this->current_plan_id);
-      // if ($plan) {
-      //   $this->plan_name = $plan->plan_name;
-      //   $this->plan_sub_name = $plan->plan_sub_name;
-      //   $this->plan_contact = $plan->no_of_contact;
-      // }
-      // $this->makeHidden(['media', 'metas', 'mysqltime', 'image1', 'image2', 'image3', 'image4', 'image5', 'email']);
       return $this;
     }
 
@@ -201,6 +191,24 @@ class User extends Authenticatable implements HasMedia
       //   $this->$name = $meta->value;
       // });
       return $this;
+    }
+
+    public function withInterestsCount(User $user = null){
+      if ($user) {
+        return $this->loadCount(['interests' => function($q) use($user){
+          $q->whereIn('interest_id', $user->interests()->pluck('interest_id'));
+        }]);
+      } else {
+        return $this->loadCount('interests');
+      }
+    }
+
+    public function withMessageMediaCount(User $user = null){
+      if ($user) {
+        return $this;
+      } else {
+        return $this;
+      }
     }
 
     public function settings(){
