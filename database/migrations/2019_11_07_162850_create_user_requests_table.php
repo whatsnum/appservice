@@ -17,7 +17,7 @@ class CreateUserRequestsTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('other_user_id')->unsigned()->nullable();
-            $table->enum('status', ['pending', 'accept', 'reject']);
+            $table->enum('status', ['pending', 'accepted', 'rejected']);
             $table->timestamps();
         });
 

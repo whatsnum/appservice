@@ -11,6 +11,7 @@ use App\Setting;
 use App\Media;
 use App\Activity;
 use App\UserMeta;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -52,8 +53,16 @@ class UserController extends Controller
 
   		$notification =  Notification::DeviceTokenStore_1_Signal($user, $device_type, $player_id);
 
-      $token =  $user->createToken('MyApp')->accessToken;
-      return ['status' => true, 'msg' => trans('messages.msg_phone_inserted'), 'token' => $token,'notification'=>$notification,'user'=>$user->myDetails()];
+      $token =  $user->createToken('MyApp');
+
+      return ['status' => true, 'msg' => trans('messages.msg_phone_inserted'),
+        'token' => $token->accessToken,
+        'token_type' => 'Bearer',
+        'expires_at' => Carbon::parse(
+            $token->token->expires_at
+        )->toDateTimeString(),
+        'notification'=>$notification,'user'=>$user->myDetails()
+      ];
 
     } else {
       // $otp=User::generateRandomOTP(4);
@@ -78,8 +87,15 @@ class UserController extends Controller
 
       //------------------------- update user player_id for push notifications ---------------------
       Notification::DeviceTokenStore_1_Signal($user, $device_type, $player_id);
+      $token =  $user->createToken('MyApp');
 
-      return array('status'=>true,'msg' =>trans('messages.msg_phone_inserted'), 'user'=>$user);
+      return ['status'=>true,'msg' =>trans('messages.msg_phone_inserted'), 'user'=>$user,
+        'token' => $token->accessToken,
+        'token_type' => 'Bearer',
+        'expires_at' => Carbon::parse(
+            $token->token->expires_at
+        )->toDateTimeString(),
+      ];
     }
   }
 
@@ -104,10 +120,6 @@ class UserController extends Controller
     $gender           = $request->gender;
     $interest_ids     = $request->interest_ids;
     $job_title        = $request->job_title;
-    // $other_gender     = $request->other_user_gender;
-    // $min_age          = 17;//$request->other_user_min_age;
-    // $max_age          = 70;//$request->other_user_max_age;
-    // $interest         = 'New Friends';//$request->interest;
     $update = [];
 
     // update user name gender age
@@ -134,12 +146,6 @@ class UserController extends Controller
           'end_plan_date'     => date('Y-m-d', strtotime("+30 days")),
         ]);
       }
-      // $update = array_merge($update, [
-      //   'other_user_min_age'  => 17,
-      //   'other_user_max_age'  => 70,
-      //   'other_user_gender'   => 'both',
-      //   'profile_step'        => 5,
-      // ]);
 
       $user->interests()->attach($interest_ids);
       $update = array_merge($update, [
@@ -178,9 +184,9 @@ class UserController extends Controller
 
   public function complete_signup(Request $request){
     $request->validate([
-      'user_id'       => 'required',
+      'user_id'     => 'required',
       'image'       => 'required',
-      'type'       => 'required',
+      'type'        => 'required',
     ]);
 
     $user_id = $request->user_id;

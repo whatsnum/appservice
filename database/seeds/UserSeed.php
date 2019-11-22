@@ -12,10 +12,15 @@ class UserSeed extends Seeder
      */
     public function run()
     {
-      factory(User::class, 10000)->create()->each(function ($user){
+      factory(User::class, 1)->create()->each(function ($user){
         $user->plans()->save(factory(App\UserPlan::class)->make());
         $job_title = App\JobTitle::inRandomOrder()->first();
         $user->job_title()->create(['name' => 'job_title', 'value' => $job_title->name]);
+
+        $user->requested()->createMany(factory(App\UserRequest::class, 10)->make()->toArray());
+
+        $user->contacts()->createMany(factory(App\Contact::class, 10)->make()->toArray());
+
         $interests = App\Interest::inRandomOrder()->limit(4)->pluck('id');
         // factory(App\InterestUser::class, 4)->make();
         // $interests = factory(App\InterestUser::class, 4)->make()->toArray()

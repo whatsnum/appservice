@@ -67,12 +67,11 @@ class UserRequest extends Model
     })->latest()->first();
   }
 
-  public static function checkBetween($user_id, $other_user_id){
-    return self::where('user_id', $user_id)->where('other_user_id', $other_user_id)
-    ->where(function ($q){
-      $q->where('status','pending')->where('status','accept');
-    })->first();
-  }
+  // public function checkBetween(User $other_user){
+  //   return $this->requests()->where('other_user_id', $other_user->id)
+  //   ->orWhere('user_id', $other_user->id)->where('status', 'pending')
+  //   ->orWhere('status', 'accepted')->first();
+  // }
 
   public static function checkRequest($other_user_id, $user_id){
     return self::where('user_id', $other_user_id)->where('other_user_id', $user_id)
@@ -81,5 +80,9 @@ class UserRequest extends Model
 
   public static function getWhatsNumContactCount(User $user){
     return self::myContacts($user)->count();
+  }
+
+  public function requester(){
+    return $this->belongsTo(User::class, 'user_id');
   }
 }

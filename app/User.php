@@ -26,7 +26,6 @@ use Carbon\Carbon;
 class User extends Authenticatable implements HasMedia
 {
     use HasApiTokens, Notifiable, HasMediaTrait;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -631,6 +630,52 @@ class User extends Authenticatable implements HasMedia
     // 	return $check_request_data_num_row;
     // }
 
+    public function isContact(User $user){
+      return Contact::where('type', 'friend')->where(function($q) use($user){
+        $q->where(function($q) use($user){
+          $q->where('user_id', $this->id)->where('other_user_id', $user->id);
+        })
+        ->orWhere(function($q) use($user){
+          $q->where('other_user_id', $this->id)->where('user_id', $user->id);
+        });
+      })
+      ->first();
+    }
+
+    public function checkBetween(User $other_user){
+      return $this->requests()->where('other_user_id', $other_user->id)
+      // ->where()
+      ->orWhere('user_id', $other_user->id)
+      // ->where('status', 'pending')->orWhere('status', 'accepted')
+      ->first();
+    }
+
+    public function checkRequestExists(User $other_user){
+      return $this->requests()->where('other_user_id', $other_user->id)
+      // ->where()
+      ->orWhere('user_id', $other_user->id)
+      ->where('status', 'pending')->orWhere('status', 'accepted')
+      ->get();
+    }
+
+    public function requestNotificationData(User $other_user){
+      return [
+        'message' => [
+          'user_name'    => $this->name,
+          'action'       => 'receive_request',
+          'action_id'    => '0',
+          'title'        => 'New request',
+          'message'      => 'You have a new request from '.$this->name,
+        ],
+        'action_data'  => [
+          'user_id'       => $this->id,
+          'other_user_id' => $other_user->id,
+          'action_id'     => 0,
+          'action'        => 'receive_request'
+        ],
+      ];
+    }
+
     public function toggleDirectMessage($bool){
       Setting::updateSetting($this, 'direct_message', $bool);
       // $this->direct_message = !$this->direct_message;
@@ -687,6 +732,16 @@ class User extends Authenticatable implements HasMedia
     //   return $this->hasMany(Group::class);
     // }
 
+    public function contacts(){
+      return $this->hasMany(Contact::class)->where('type', 'friend')->orWhere(function($q){
+        $q->where('type', 'friend')->where('other_user_id', $this->id);
+      });
+    }
+
+    public function blocked(){
+      return $this->hasMany(Contact::class)->where('type', 'block');
+    }
+
     public function activities(){
       return $this->morphMany(Activity::class, 'activeable');
     }
@@ -715,17 +770,29 @@ class User extends Authenticatable implements HasMedia
       return $this->hasMany(UserMeta::class);
     }
 
+    public function requested(){
+      return $this->hasMany(UserRequest::class);
+    }
+
+    public function requested_pending(){
+      return $this->requested()->where('status', 'pending');
+    }
+
     public function requests(){
-      return $this->hasMany(UserRequest::class, 'user_id');
+      return $this->hasMany(UserRequest::class, 'other_user_id');
     }
 
-    public function accepted_requests(){
-      return $this->hasOne(UserRequest::class, 'user_id')->where('status', 'accept');
+    public function requests_pending(){
+      return $this->requests()->where('status', 'pending');
     }
 
-    public function accept_requests(){
-      return $this->hasOne(UserRequest::class, 'other_user_id')->where('status', 'accept');
-    }
+    // public function accepted_requests(){
+    //   return $this->hasOne(UserRequest::class, 'user_id')->where('status', 'accept');
+    // }
+    //
+    // public function accept_requests(){
+    //   return $this->hasOne(UserRequest::class, 'other_user_id')->where('status', 'accept');
+    // }
 
     public function plan(){
       return $this->hasOne(UserPlan::class)->latest();
