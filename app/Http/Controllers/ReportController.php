@@ -97,8 +97,4 @@ class ReportController extends Controller
     {
         //
     }
-
-    // public static function addNew($request){
-    //
-    // }
 }

@@ -619,24 +619,15 @@ class UserController extends Controller
   //   return array('success'=>'true','msg' =>array(trans('messages.msg_data_found')),'users'=>$users, 'count' => $users->count());
   // }
   //
-  // public function user_details(Request $request){
-  //   $request->validate([
-  //     'other_user_id'   => 'required',
-  //   ]);
-  //
-  //   $user = $request->user;
-  //   $user_id = $request->user_id;
-  //   $other_user_id = $request->other_user_id;
-  //
-  //   $user_detail_arr = $user->getDetails($other_user_id);
-  //   if(!$user_detail_arr || $user_detail_arr == 'NA'){
-  //       $user_detail_arr='NA';
-  //   } else {
-  //     $user_detail_arr->withUserRequestStatus($request->user);
-  //   }
-  //
-  //   return array('success'=> $user_detail_arr != "NA", 'user_detail_arr'=>$user_detail_arr, 'ads' => [], 'ad_count' => null);
-  // }
+  public function show(Request $request, User $user){
+    $otherUser = $user->myDetails();
+    $user = $request->user();
+    $otherUser->withUserRequestStatus($user)
+    ->withInterestsCount($user)
+    ->withMessageMediaCount($user);
+
+    return ['success'=> true, 'u' => $user, 'otherUser'=>$otherUser];
+  }
   //
   // public function search_modal(Request $request){
   //   $validate = $this->validates($request, [
