@@ -46,10 +46,18 @@ class UserRequestController extends Controller
       $other_user = $user->findOrFail($other_user_id);
       $msg = trans('messages.request_failed');
       $status = false;
+      $continue = true;
+      $update = false;
       $notifications=[];
+
+      if ($user->isContact($other_user)) {
+        return ['status' => false, 'msg' => trans('msg.is_contact')];
+      }
 
       // request exists between users
       if ($exists = $user->checkRequestExists($other_user)) {
+        $exists = $exists->first();
+        $continue = false;
 
         if ($exists->status == 'pending') {
           $msg = trans('messages.request_pending');
@@ -63,9 +71,11 @@ class UserRequestController extends Controller
           $msg = trans('messages.request_sent');
         }
 
-        if ($exists->status == 'accepted') {
-          $msg = trans('messages.request_sent_accepted');
-        }
+        // if ($exists->status == 'accepted') {
+        //   // $msg = trans('messages.request_sent_accepted');
+        //   $continue = true;
+        //   $update = true;
+        // }
         // return ['status'=> false,'msg'=>$msg];
       } else {
         $created = $user->requests()->create([
@@ -120,9 +130,20 @@ class UserRequestController extends Controller
       $request->validate(['action' => 'required']);
       $action = $request->action;
       $user = $request->user();
+      $otherUser = $userRequest->requester()->first();
       $this->authorize('update', $userRequest);
 
-      $update = $userRequest->update(['status' => $action ? 'accepted' : 'rejected']);
+      // check relationship
+      // dd($user->isContact($otherUser));
+      if ($user->isContact($otherUser)) {
+        return ['status' => false, 'msg' => trans('msg.is_contact')];
+      }
+
+      $update = $userRequest->update(['status' => $action == true ? 'accepted' : 'rejected']);
+      if ($update && $action == true) {
+        // create contact
+        $otherUser->contacts()->create(['other_user_id' => $user->id]);
+      }
       $msg = $update ? trans('msg.updated') : trans('msg.not_updated');
       return ['status' => $update, 'msg' => $msg];
     }

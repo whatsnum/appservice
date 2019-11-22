@@ -26,7 +26,6 @@ use Carbon\Carbon;
 class User extends Authenticatable implements HasMedia
 {
     use HasApiTokens, Notifiable, HasMediaTrait;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -631,6 +630,18 @@ class User extends Authenticatable implements HasMedia
     // 	return $check_request_data_num_row;
     // }
 
+    public function isContact(User $user){
+      return Contact::where('type', 'friend')->where(function($q) use($user){
+        $q->where(function($q) use($user){
+          $q->where('user_id', $this->id)->where('other_user_id', $user->id);
+        })
+        ->orWhere(function($q) use($user){
+          $q->where('other_user_id', $this->id)->where('user_id', $user->id);
+        });
+      })
+      ->first();
+    }
+
     public function checkBetween(User $other_user){
       return $this->requests()->where('other_user_id', $other_user->id)
       // ->where()
@@ -644,7 +655,7 @@ class User extends Authenticatable implements HasMedia
       // ->where()
       ->orWhere('user_id', $other_user->id)
       ->where('status', 'pending')->orWhere('status', 'accepted')
-      ->first();
+      ->get();
     }
 
     public function requestNotificationData(User $other_user){
@@ -720,6 +731,16 @@ class User extends Authenticatable implements HasMedia
     // public function groups(){
     //   return $this->hasMany(Group::class);
     // }
+
+    public function contacts(){
+      return $this->hasMany(Contact::class)->where('type', 'friend')->orWhere(function($q){
+        $q->where('type', 'friend')->where('other_user_id', $this->id);
+      });
+    }
+
+    public function blocked(){
+      return $this->hasMany(Contact::class)->where('type', 'block');
+    }
 
     public function activities(){
       return $this->morphMany(Activity::class, 'activeable');

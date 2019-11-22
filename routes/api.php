@@ -23,6 +23,7 @@ Route::group(['middleware' => 'localization'], function(){
 //   });
 //
   Route::post('login', 'UserController@login');
+  Route::post('register', 'UserController@register');
 //
 //
 //   Route::group(['middleware' => 'auth:api'], function(){
@@ -47,6 +48,24 @@ Route::group(['middleware' => 'localization'], function(){
 //
 
   Route::group(['middleware' => ['activated', 'auth:api']], function(){
+    // resources
+    Route::resource('contacts', 'ContactController');
+    Route::resource('users', 'UserController');
+    Route::resource('job_titles', 'JobTitleController');
+    Route::resource('interests', 'InterestController');
+    Route::resource('activities', 'ActivityController');
+    Route::resource('user_requests', 'UserRequestController');
+    Route::resource('reports', 'ReportController');
+    // users
+    Route::get('users/state/random', 'UserRequestController@random_users');
+    Route::get('users/map', 'UserController@latlng');
+    Route::post('users/like/{other_user}', 'UserController@like');
+    Route::post('users/passcode/update', 'UserController@updatePassCode');
+    // contacts
+    Route::get('contacts/users/blocked', 'ContactController@blocked');
+    Route::post('contacts/{otherUser}/block', 'ContactController@block');
+    Route::delete('contacts/{otherUser}/unblock', 'ContactController@unBlock');
+
 //     Route::get('get_my_receive_request.php', 'UserController@get_my_receive_request');
 //     Route::get('get_my_pending_sent_requests.php', 'UserController@get_my_pending_sent_requests');
 //     Route::get('get_my_whatsnum_contacts.php', 'UserController@get_my_whatsnum_contacts');
@@ -72,32 +91,21 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::get('post_catgories', 'CategoryController@post_catgories');
 //     Route::get('group_catgories', 'CategoryController@group_catgories');
 //     Route::resource('posts', 'PostController');
-    Route::get('users/state/random', 'UserRequestController@random_users');
-    Route::get('users/map', 'UserController@latlng');
-    Route::resource('users', 'UserController');
-    Route::resource('job_titles', 'JobTitleController');
-    Route::resource('interests', 'InterestController');
-    Route::resource('activities', 'ActivityController');
-    Route::resource('user_requests', 'UserRequestController');
 //     // Route::resource('countries', 'ActivityController');
     Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
     Route::post('image_upload', 'UserController@uploadImage');
 //     Route::get('users/new', 'UserRequestController@new_users');
 //     Route::get('users/valid', 'UserController@validIds');
-    Route::post('users/like/{other_user}', 'UserController@like');
 //     Route::post('users/regard', 'UserController@regard');
-    Route::resource('reports', 'ReportController');
 //     Route::resource('settings', 'SettingController');
 //     Route::post('settings/change', 'SettingController@change');
 //     Route::get('mail/support/view', 'MailingController@view');
 //     Route::post('mail/support/send', 'MailingController@support');
 //     Route::post('users/delete', 'UserController@delete');
-    Route::post('users/passcode/update', 'UserController@updatePassCode');
 //     // Route::get('activities/{id}/user_request', 'ActivityController@userRequest');
     // Route::post('register', 'UserController@register');
 //
   });
-  Route::post('register', 'UserController@register');
 //
 });
 //

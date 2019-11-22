@@ -81,4 +81,8 @@ class UserRequest extends Model
   public static function getWhatsNumContactCount(User $user){
     return self::myContacts($user)->count();
   }
+
+  public function requester(){
+    return $this->belongsTo(User::class, 'user_id');
+  }
 }

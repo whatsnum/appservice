@@ -87,8 +87,15 @@ class UserController extends Controller
 
       //------------------------- update user player_id for push notifications ---------------------
       Notification::DeviceTokenStore_1_Signal($user, $device_type, $player_id);
+      $token =  $user->createToken('MyApp');
 
-      return array('status'=>true,'msg' =>trans('messages.msg_phone_inserted'), 'user'=>$user);
+      return ['status'=>true,'msg' =>trans('messages.msg_phone_inserted'), 'user'=>$user,
+        'token' => $token->accessToken,
+        'token_type' => 'Bearer',
+        'expires_at' => Carbon::parse(
+            $token->token->expires_at
+        )->toDateTimeString(),
+      ];
     }
   }
 

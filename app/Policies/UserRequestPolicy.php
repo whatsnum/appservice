@@ -53,7 +53,7 @@ class UserRequestPolicy
      */
     public function update(User $user, UserRequest $userRequest)
     {
-      return ($userRequest->other_user_id == $user->id);
+      return $userRequest->other_user_id == $user->id;
     }
 
     /**
