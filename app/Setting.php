@@ -8,6 +8,7 @@ use App\User;
 class Setting extends Model
 {
   protected $fillable = ['user_id', 'name', 'value'];
+  protected $setting_names = ['show_on_map'];
 
   public static function toggleShowOnMap(User $user){
     $settings = $user->load(['settings' => function($q){
