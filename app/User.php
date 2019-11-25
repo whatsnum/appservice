@@ -842,6 +842,30 @@ class User extends Authenticatable implements HasMedia
       return $this->hasMany(NotificationMessage::class, 'other_user_id')->latest()->get();
     }
 
+    public function conversations(){
+      return $this->hasMany(Conversation::class)->orWhere('other_user_id', $this->id);
+    }
+
+    public function conversation(User $otherUser){
+      // if ($otherUser) {
+      return $this->hasOne(Conversation::class)->where('other_user_id', $otherUser->id)->orWhere('other_user_id', $this->id)->where('user_id', $otherUser->id)->first();
+      // }
+
+      // return $this->hasMany(Contact::class)->where('type', 'friend')->orWhere(function($q){
+      //   $q->where('type', 'friend')->where('other_user_id', $this->id);
+      // });
+
+      // return $this->hasMany(Conversation::class)->orWhere('other_user_id', $this->id);
+    }
+
+    public function messages(){
+      return $this->hasManyThrough(Message::class, Conversation::class)->orWhere('other_user_id', $this->id);
+    }
+
+    public function conversation_messages(){
+      return $this->hasMany(Message::class);
+    }
+
     // public function contact(){
     //   return $this->hasOne(UserRequest::class, 'user_id')->where('status', 'accept');
     // }

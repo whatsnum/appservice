@@ -56,6 +56,8 @@ Route::group(['middleware' => 'localization'], function(){
     Route::resource('activities', 'ActivityController');
     Route::resource('user_requests', 'UserRequestController');
     Route::resource('reports', 'ReportController');
+    Route::resource('messages', 'MessageController');
+    Route::resource('conversations', 'ConversationController');
     // users
     Route::get('users/state/random', 'UserRequestController@random_users');
     Route::get('users/map', 'UserController@latlng');
@@ -72,6 +74,8 @@ Route::group(['middleware' => 'localization'], function(){
     // settings
     Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
     Route::post('image_upload', 'UserController@uploadImage');
+    // messages
+    // Route::get('messages/thread/{thread}', 'MessageController@thread');
 
 //     Route::get('get_my_receive_request.php', 'UserController@get_my_receive_request');
 //     Route::get('get_my_pending_sent_requests.php', 'UserController@get_my_pending_sent_requests');

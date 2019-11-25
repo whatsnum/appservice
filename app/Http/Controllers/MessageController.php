@@ -12,9 +12,11 @@ class MessageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+      $user = $request->user();
+      $messages = $user->messages()->paginate($this->paginate($request));
+      return ['status' => true, 'messages' => $messages];
     }
 
     /**
@@ -35,7 +37,29 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $user = $request->user();
+      $request->validate([
+        'other_user_id' => 'required',
+        'message' => 'required',
+      ]);
+      $otherUser = $user->findOrFail($request->other_user_id);
+
+      $conversation = $user->conversation($otherUser);
+
+      if (!$conversation) {
+        $conversation = $user->conversations()->create(['other_user_id' => $otherUser->id]);
+      }
+
+      if ($conversation) {
+        $message = $conversation->messages()->create([
+          'user_id' => $user->id,
+          'message' => $request->message,
+        ]);
+
+        return ['status' => !!$message, 'message' => $message, 'msg' => trans($message ? 'msg.created' : 'msg.not_created')];
+      }
+
+      return ['status' => false, 'msg' => trans('msg.conversation_error')];
     }
 
     /**
@@ -78,8 +102,19 @@ class MessageController extends Controller
      * @param  \App\Message  $message
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Message $message)
+    public function destroy(Request $request, Message $message)
     {
-        //
+      $user = $request->user();
+      $everyone = $request->everyone;
+      $this->authorize('delete', $message);
+
+      if ($everyone) {
+        $this->authorize('deleteAll', $message);
+        $message->deleteForAll();
+      } else {
+        $message->deletedBy($user);
+      }
+
+      return ['status' => true, 'message' => $message];
     }
 }

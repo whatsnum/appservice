@@ -12,6 +12,10 @@ class Controller extends BaseController
 {
   use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+  public function paginate($request, $size = 20){
+    return $request->pageSize ? $request->pageSize : $size;
+  }
+
   public function validates($request, $rules){
     $validator = Validator::make($request->all(), $rules,[
       'required' => "messages.msg_".":attribute",

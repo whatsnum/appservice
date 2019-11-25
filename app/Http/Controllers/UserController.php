@@ -411,11 +411,11 @@ class UserController extends Controller
         foreach ($image as $media) {
           $photos['images'][] = $media['images'];
         }
-        Activity::addNew('images', $request, $user, $photos);
+        // Activity::addNew('images', $request, $user, $photos);
       } else {
         $media_file = Media::uploadImage($image);
         $image = ($user->uploadImage($media_file, $type, $request))['images'];
-        Activity::addNew('profile', $request, $user, $image);
+        // Activity::addNew('profile', $request, $user, $image);
       }
       if ($user) {
         $user->myDetails();
