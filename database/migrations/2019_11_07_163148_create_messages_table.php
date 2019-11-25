@@ -20,7 +20,7 @@ class CreateMessagesTable extends Migration
             $table->bigInteger('reply')->unsigned()->nullable();
             // $table->bigInteger('other_user_id')->unsigned()->nullable();
             // $table->morphs('messageable');
-            $table->text('message');
+            $table->text('message')->nullable();
             $table->timestamp('read_at')->nullable();
             $table->json('deleted_by')->nullable();
             $table->softDeletes();

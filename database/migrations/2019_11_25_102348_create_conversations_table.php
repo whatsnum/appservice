@@ -15,15 +15,16 @@ class CreateConversationsTable extends Migration
     {
         Schema::create('conversations', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('user_id')->unsigned();
-            $table->bigInteger('other_user_id')->unsigned();
+            // $table->bigInteger('user_id')->unsigned();
+            // $table->bigInteger('other_user_id')->unsigned();
+            $table->morphs('conversable');
             $table->softDeletes();
             $table->timestamps();
         });
 
         Schema::table('conversations', function (Blueprint $table) {
-          $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-          $table->foreign('other_user_id')->references('id')->on('users')->onDelete('cascade');
+          // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+          // $table->foreign('other_user_id')->references('id')->on('users')->onDelete('cascade');
          });
     }
 

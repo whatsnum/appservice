@@ -45,11 +45,13 @@ class ConversationController extends Controller
       $user = $request->user();
       $otherUser = $user->findOrFail($request->other_user_id);
       // check exists
-      if ($user->conversation($otherUser)) {
+      if ($user->conversations($otherUser)->first()) {
         return ['status' => false, 'msg' => trans('msg.creation_exists')];
       }
 
-      $conversation = $user->conversations()->create(['other_user_id' => $otherUser->id]);
+      $conversation = $user->converse()->create();
+      $user->conversations()->attach($conversation);
+      $otherUser->conversations()->attach($conversation);
 
       return ['status' => !!$conversation, 'msg' => trans($conversation ? 'msg.created' : 'msg.not_created'), 'conversation' => $conversation];
     }

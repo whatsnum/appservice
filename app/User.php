@@ -740,6 +740,34 @@ class User extends Authenticatable implements HasMedia
     //   return $this->hasMany(Group::class);
     // }
 
+    // public function conversation(User $otherUser){
+    //   return $this->conversations()->whereHas('participants', function($q) use($otherUser){
+    //     $q->where('user_id', $otherUser->id);
+    //   })->first();
+    // }
+
+    public function conversations(User $otherUser = null){
+      if ($otherUser) {
+        return $this->conversations()->whereHas('participants', function($q) use($otherUser){
+          $q->where('user_id', $otherUser->id);
+        });
+      } else {
+        return $this->belongsToMany(Conversation::class, 'conversation_users')->withTimestamps();
+      }
+    }
+
+    // public function messages(){
+    //   return $this->hasManyThrough(Message::class, ConversationUser::class);
+    // }
+
+    public function conversation_messages(){
+      return $this->hasMany(Message::class);
+    }
+
+    public function converse(){
+      return $this->morphMany(Conversation::class, 'conversable');
+    }
+
     public function contacts(){
       return $this->hasMany(Contact::class)->where('type', 'friend')->orWhere(function($q){
         $q->where('type', 'friend')->where('other_user_id', $this->id);
@@ -840,30 +868,6 @@ class User extends Authenticatable implements HasMedia
 
     public function notification_messages(){
       return $this->hasMany(NotificationMessage::class, 'other_user_id')->latest()->get();
-    }
-
-    public function conversations(){
-      return $this->hasMany(Conversation::class)->orWhere('other_user_id', $this->id);
-    }
-
-    public function conversation(User $otherUser){
-      // if ($otherUser) {
-      return $this->hasOne(Conversation::class)->where('other_user_id', $otherUser->id)->orWhere('other_user_id', $this->id)->where('user_id', $otherUser->id)->first();
-      // }
-
-      // return $this->hasMany(Contact::class)->where('type', 'friend')->orWhere(function($q){
-      //   $q->where('type', 'friend')->where('other_user_id', $this->id);
-      // });
-
-      // return $this->hasMany(Conversation::class)->orWhere('other_user_id', $this->id);
-    }
-
-    public function messages(){
-      return $this->hasManyThrough(Message::class, Conversation::class)->orWhere('other_user_id', $this->id);
-    }
-
-    public function conversation_messages(){
-      return $this->hasMany(Message::class);
     }
 
     // public function contact(){

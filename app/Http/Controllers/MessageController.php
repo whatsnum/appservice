@@ -14,9 +14,9 @@ class MessageController extends Controller
      */
     public function index(Request $request)
     {
-      $user = $request->user();
-      $messages = $user->messages()->paginate($this->paginate($request));
-      return ['status' => true, 'messages' => $messages];
+      // $user = $request->user();
+      // $messages = $user->messages()->paginate($this->paginate($request));
+      // return ['status' => true, 'messages' => $messages];
     }
 
     /**
@@ -44,10 +44,12 @@ class MessageController extends Controller
       ]);
       $otherUser = $user->findOrFail($request->other_user_id);
 
-      $conversation = $user->conversation($otherUser);
+      $conversation = $user->conversations($otherUser)->first();
 
       if (!$conversation) {
-        $conversation = $user->conversations()->create(['other_user_id' => $otherUser->id]);
+        $conversation = $user->converse()->create();
+        $user->conversations()->attach($conversation);
+        $otherUser->conversations()->attach($conversation);
       }
 
       if ($conversation) {

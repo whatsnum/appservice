@@ -8,10 +8,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Conversation extends Model
 {
   use SoftDeletes;
-  protected $fillable = ['user_id',	'other_user_id', 'deleted_at'];
+  protected $fillable = ['deleted_at'];
 
   public function last_message(){
     return $this->hasOne(Message::class)->latest();
+  }
+
+  public function participants(){
+    return $this->belongsToMany(User::class, 'conversation_users');
   }
 
   public function messages(){

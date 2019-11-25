@@ -30,7 +30,7 @@ class ConversationPolicy
      */
     public function view(User $user, Conversation $conversation)
     {
-      return $user->id == $conversation->user_id || $user->id == $conversation->other_user_id;
+      return in_array($user->id, $conversation->participants()->pluck('user_id')->toArray());
     }
 
     /**
@@ -65,7 +65,8 @@ class ConversationPolicy
      */
     public function delete(User $user, Conversation $conversation)
     {
-      return $user->id == $conversation->user_id || $user->id == $conversation->other_user_id;
+      // return $user->id == $conversation->user_id || $user->id == $conversation->other_user_id;
+      return in_array($user->id, $conversation->participants()->pluck('user_id')->toArray());
     }
 
     /**
