@@ -42,8 +42,10 @@ class UserSeed extends Seeder
         $conversations = $user->converse()->createMany(factory(App\ConversationUser::class, $num_conv)->make()->toArray());
         // attach users
         foreach ($conversations as $key => $value) {
-          $user->conversations()->attach($value);
-          $users[$key]->conversations()->attach($value);
+          if (isset($users[$key])) {
+            $user->conversations()->attach($value);
+            $users[$key]->conversations()->attach($value);
+          }
         }
         // -create message foreach conversations
         $conversations->map(function($conversation) use($user, $num_conv_msg){
