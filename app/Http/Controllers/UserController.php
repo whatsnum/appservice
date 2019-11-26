@@ -169,7 +169,7 @@ class UserController extends Controller
   }
 
   public function updatePassCode(Request $request){
-    $user = $request->user;
+    $user = $request->user();
     $passcode = request('passcode');
 
     $user = Setting::updateSetting($user, 'passcode', $passcode, function($user){
