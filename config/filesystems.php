@@ -71,6 +71,20 @@ return [
             'url'         => env('APP_URL').'/'. 'images/user_avatars',
         ],
 
+        'msg_images' => [
+          'driver' => env('FILESYSTEM_DRIVER', 'local'),
+          'root'   =>  base_path('/medias/msg_images'),
+          'visibility' => 'public',
+          'url'         => env('APP_URL').'/medias/msg_images',
+        ],
+
+        'msg_videos' => [
+          'driver' => env('FILESYSTEM_DRIVER', 'local'),
+          'root'   =>  base_path('/medias/msg_videos'),
+          'visibility' => 'public',
+          'url'         => env('APP_URL').'/medias/msg_videos',
+        ],
+
         'user_galleries' => [
           'driver' => env('FILESYSTEM_DRIVER', 'local'),
           'root'   =>  base_path('/images/user_gallery'),

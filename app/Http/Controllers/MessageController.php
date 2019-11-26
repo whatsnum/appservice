@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Message;
 use Illuminate\Http\Request;
+use App\Media;
 
 class MessageController extends Controller
 {
@@ -41,7 +42,13 @@ class MessageController extends Controller
       $request->validate([
         'other_user_id' => 'required',
         'message' => 'required',
+        'image' => 'imageable',
+        // 'video' => 'mimetypes:video/avi,video/mpeg,video/quicktime'
       ]);
+      // extract
+      $image = $request->image;
+      $video = $request->video;
+
       $otherUser = $user->findOrFail($request->other_user_id);
 
       $conversation = $user->conversations($otherUser)->first();
@@ -57,6 +64,12 @@ class MessageController extends Controller
           'user_id' => $user->id,
           'message' => $request->message,
         ]);
+
+        if ($image) {
+          $message->saveImage($image);
+        } else if ($video) {
+          $message->saveVideo($video);
+        }
 
         return ['status' => !!$message, 'message' => $message, 'msg' => trans($message ? 'msg.created' : 'msg.not_created')];
       }

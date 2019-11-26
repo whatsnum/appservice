@@ -9,8 +9,8 @@ use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\File;
 use Spatie\MediaLibrary\Models\Media;
-use Laravel\Passport\HasApiTokens;
 use Spatie\Image\Image;
+use Laravel\Passport\HasApiTokens;
 
 use App\Plan;
 use App\UserPlan;
