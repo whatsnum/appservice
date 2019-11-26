@@ -70,7 +70,7 @@ class ConversationController extends Controller
 
       $unread->update(['read_at' => now()]);
 
-      $messages = $conversation->messages()->where("deleted_by->$user->id", null)->paginate($this->paginate($request));
+      $messages = $conversation->messages()->with('replied')->where("deleted_by->$user->id", null)->paginate($this->paginate($request));
 
       return ['status' => true, 'messages' => $messages];
     }
