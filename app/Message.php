@@ -13,7 +13,7 @@ use Spatie\Image\Image;
 class Message extends Model implements HasMedia
 {
   use SoftDeletes, HasMediaTrait;
-  protected $fillable = ['user_id', 'conversation_id',	'reply', 'message', 'deleted_at'];
+  protected $fillable = ['user_id', 'delivered_at', 'read_at', 'conversation_id',	'reply', 'message', 'deleted_at'];
   protected $casts = ['deleted_by' => 'array'];
   protected $hidden = ['media'];
 
