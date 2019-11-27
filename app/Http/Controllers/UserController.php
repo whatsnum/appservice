@@ -626,7 +626,7 @@ class UserController extends Controller
     ->withInterestsCount($user)
     ->withMessageMediaCount($user);
 
-    return ['success'=> true, 'u' => $user, 'otherUser'=>$otherUser];
+    return ['success'=> true, 'otherUser'=>$otherUser];
   }
   //
   // public function search_modal(Request $request){
