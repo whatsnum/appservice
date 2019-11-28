@@ -117,7 +117,7 @@ class ConversationController extends Controller
         $msg->deletedBy($user);
       });
 
-      return ['status' => true, 'conversation' => $conversation];
+      return ['status' => true, 'msg' => trans('msg.deleted'), 'conversation' => $conversation];
 
     }
 }
