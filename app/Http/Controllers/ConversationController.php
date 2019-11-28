@@ -15,7 +15,9 @@ class ConversationController extends Controller
     public function index(Request $request)
     {
       $user = $request->user();
-      $conversations = $user->conversations()->with('last_message')->withCount(['unread'])->get();
+      $conversations = $user->conversations()->with(['last_message', 'participant_id' => function($q) use($user){
+        $q->where('conversation_users.user_id', '!=', $user->id)->select('conversation_users.user_id as id');
+      }])->withCount(['unread'])->get();
 
       return ['status' => true, 'conversations' => $conversations];
     }

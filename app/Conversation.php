@@ -9,6 +9,7 @@ class Conversation extends Model
 {
   use SoftDeletes;
   protected $fillable = ['deleted_at'];
+  protected $hidden = ['pivot'];
 
   public function last_message(){
     return $this->hasOne(Message::class)->latest();
@@ -16,6 +17,10 @@ class Conversation extends Model
 
   public function participants(){
     return $this->belongsToMany(User::class, 'conversation_users');
+  }
+
+  public function participant_id(){
+    return $this->participants();
   }
 
   public function messages(){
