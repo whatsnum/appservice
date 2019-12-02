@@ -32,12 +32,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
       Validator::extend('imageable', function ($attribute, $value, $params, $validator) {
-          try {
-              Image::make($value);
-              return true;
-          } catch (\Exception $e) {
-              return false;
-          }
+        if (!$value) {
+          return true;
+        }
+        try {
+            Image::make($value);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
       });
 
       Schema::defaultStringLength(191);
