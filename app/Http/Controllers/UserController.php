@@ -306,6 +306,9 @@ class UserController extends Controller
 
 
     $users = $user->Users($request)->paginate($request->pageSize ? $request->pageSize : 20);
+    $users->map(function($u) use($user){
+      $u->withUserRequestStatus($user);
+    });
     // $user->usersWithRequestPhoto($users->items());
     return ['status' => true, 'users' => $users, 'in' => $user->interests->pluck('name'), 'user' => $user];
   }
