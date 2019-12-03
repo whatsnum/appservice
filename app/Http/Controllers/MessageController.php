@@ -62,6 +62,7 @@ class MessageController extends Controller
       if ($conversation) {
         $message = $conversation->messages()->create([
           'user_id' => $user->id,
+          'reply' => $request->reply,
           'message' => $request->message,
         ]);
 
