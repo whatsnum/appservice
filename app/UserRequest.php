@@ -75,7 +75,7 @@ class UserRequest extends Model
 
   public static function checkRequest($other_user_id, $user_id){
     return self::where('user_id', $other_user_id)->where('other_user_id', $user_id)
-    ->where('status', 'pending')->latest('updatetime')->first();
+    ->where('status', 'pending')->latest();
   }
 
   public static function getWhatsNumContactCount(User $user){

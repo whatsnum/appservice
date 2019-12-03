@@ -651,19 +651,31 @@ class User extends Authenticatable implements HasMedia
     }
 
     public function checkBetween(User $other_user){
-      return $this->requests()->where('other_user_id', $other_user->id)
-      // ->where()
-      ->orWhere('user_id', $other_user->id)
-      // ->where('status', 'pending')->orWhere('status', 'accepted')
-      ->first();
+      return UserRequest::where(function($q) use($other_user){
+        $q->where('user_id', $this->id)->where('other_user_id', $other_user->id)->where(function($q){
+          $q->where('status', 'pending')->orWhere('status', 'accepted');
+        });
+      })
+      ->orWhere(function($q) use($other_user){
+        $q->where('user_id', $other_user->id)->where('other_user_id', $this->id)->where(function($q){
+          $q->where('status', 'pending')->orWhere('status', 'accepted');
+        });
+      });
+
+      // return $this->requests()->where('other_user_id', $other_user->id)
+      // // ->where()
+      // ->orWhere('user_id', $other_user->id)
+      // // ->where('status', 'pending')->orWhere('status', 'accepted')
+      // ->first();
     }
 
     public function checkRequestExists(User $other_user){
-      return $this->requests()->where('other_user_id', $other_user->id)
-      // ->where()
-      ->orWhere('user_id', $other_user->id)
-      ->where('status', 'pending')->orWhere('status', 'accepted')
-      ->get();
+      return $this->checkBetween($other_user);
+      // return $this->requests()->where('other_user_id', $other_user->id)
+      // // ->where()
+      // ->orWhere('user_id', $other_user->id)
+      // ->where('status', 'pending')->orWhere('status', 'accepted')
+      // ->get();
     }
 
     public function requestNotificationData(User $other_user){
@@ -816,6 +828,10 @@ class User extends Authenticatable implements HasMedia
 
     public function requests(){
       return $this->hasMany(UserRequest::class, 'other_user_id');
+    }
+
+    public function request(){
+      return $this->hasMany(UserRequest::class, 'user_id');
     }
 
     public function requests_pending(){
