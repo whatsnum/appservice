@@ -109,7 +109,7 @@ class Message extends Model implements HasMedia
   public function registerMediaConversions(Media $media = null){
     $this->addMediaConversion('thumb')
     ->withResponsiveImages()
-    ->width(368)->height(232)//->sharpen(10)
+    ->width(50)->height(50)->blur(5)
     ->performOnCollections('image');
   }
 }
