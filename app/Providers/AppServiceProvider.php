@@ -10,6 +10,7 @@ use Laravel\Passport\Console\InstallCommand;
 use Laravel\Passport\Console\KeysCommand;
 
 use Illuminate\Support\Facades\Validator;
+use \Illuminate\Validation\ValidationException;
 use Intervention\Image\Facades\Image;
 
 class AppServiceProvider extends ServiceProvider
@@ -39,7 +40,9 @@ class AppServiceProvider extends ServiceProvider
             Image::make($value);
             return true;
         } catch (\Exception $e) {
-            return false;
+          $validator->errors()->add('image', 'The image field must be a valid image type');
+          throw new ValidationException($validator);
+            // return false;
         }
       });
 

@@ -41,13 +41,19 @@ class MessageController extends Controller
       $user = $request->user();
       $request->validate([
         'other_user_id' => 'required',
-        'message' => 'required',
+        'message' => 'string',
         'image' => 'imageable',
         // 'video' => 'mimetypes:video/avi,video/mpeg,video/quicktime'
       ]);
+
       // extract
       $image = $request->image;
       $video = $request->video;
+      $text = $request->message;
+
+      if (!$image && !$video && !$text) {
+        return ['status' => false, 'msg' => trans('msg.empty_msg')];
+      }
 
       $otherUser = $user->findOrFail($request->other_user_id);
 
@@ -63,7 +69,7 @@ class MessageController extends Controller
         $message = $conversation->messages()->create([
           'user_id' => $user->id,
           'reply' => $request->reply,
-          'message' => $request->message,
+          'message' => $text,
         ]);
 
         if ($image) {
