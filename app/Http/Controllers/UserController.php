@@ -169,7 +169,7 @@ class UserController extends Controller
   }
 
   public function updatePassCode(Request $request){
-    $user = $request->user;
+    $user = $request->user();
     $passcode = request('passcode');
 
     $user = Setting::updateSetting($user, 'passcode', $passcode, function($user){
@@ -306,6 +306,9 @@ class UserController extends Controller
 
 
     $users = $user->Users($request)->paginate($request->pageSize ? $request->pageSize : 20);
+    $users->map(function($u) use($user){
+      $u->withUserRequestStatus($user);
+    });
     // $user->usersWithRequestPhoto($users->items());
     return ['status' => true, 'users' => $users, 'in' => $user->interests->pluck('name'), 'user' => $user];
   }
@@ -411,11 +414,11 @@ class UserController extends Controller
         foreach ($image as $media) {
           $photos['images'][] = $media['images'];
         }
-        Activity::addNew('images', $request, $user, $photos);
+        // Activity::addNew('images', $request, $user, $photos);
       } else {
         $media_file = Media::uploadImage($image);
         $image = ($user->uploadImage($media_file, $type, $request))['images'];
-        Activity::addNew('profile', $request, $user, $image);
+        // Activity::addNew('profile', $request, $user, $image);
       }
       if ($user) {
         $user->myDetails();
@@ -626,7 +629,7 @@ class UserController extends Controller
     ->withInterestsCount($user)
     ->withMessageMediaCount($user);
 
-    return ['success'=> true, 'u' => $user, 'otherUser'=>$otherUser];
+    return ['success'=> true, 'otherUser'=>$otherUser];
   }
   //
   // public function search_modal(Request $request){

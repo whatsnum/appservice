@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Artisan;
+use Illuminate\Support\Facades\Log;
 
 class AppReset extends Command
 {
@@ -38,6 +39,7 @@ class AppReset extends Command
      */
     public function handle()
     {
+      Log::debug('app:reset');
       $output['freshDb'] = Artisan::call('migrate:fresh');
       $output['passportDb'] = Artisan::call('migrate', [
         '--path' => 'vendor/laravel/passport/database/migrations', '--force' => true
@@ -47,7 +49,7 @@ class AppReset extends Command
       $output['eventGen'] = Artisan::call('event:generate');
       $output['dbSeed'] = Artisan::call('db:seed');
       // $output['MigrateDB'] = Artisan::call('migrate');
-
+      Log::debug($output);
       print_r($output);
     }
 }
