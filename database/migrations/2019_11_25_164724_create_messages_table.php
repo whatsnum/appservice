@@ -15,16 +15,24 @@ class CreateMessagesTable extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->bigInteger('conversation_id')->unsigned()->nullable();
             $table->bigInteger('user_id')->unsigned();
-            $table->bigInteger('other_user_id')->unsigned()->nullable();
-            $table->string('type');
-            $table->text('message');
+            $table->bigInteger('reply')->unsigned()->nullable();
+            // $table->bigInteger('other_user_id')->unsigned()->nullable();
+            // $table->morphs('messageable');
+            $table->text('message')->nullable();
+            $table->timestamp('delivered_at')->nullable();
+            $table->timestamp('read_at')->nullable();
+            $table->json('deleted_by')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
 
         Schema::table('messages', function (Blueprint $table) {
+          $table->foreign('conversation_id')->references('id')->on('conversations')->onDelete('cascade');
+          $table->foreign('reply')->references('id')->on('messages')->onDelete('cascade');
           $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-          $table->foreign('other_user_id')->references('id')->on('users')->onDelete('set null');
+          // $table->foreign('other_user_id')->references('id')->on('users')->onDelete('set null');
          });
     }
 
