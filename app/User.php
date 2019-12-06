@@ -869,4 +869,12 @@ class User extends Authenticatable implements HasMedia
     //     // });
     //
     // }
+    public function notes()
+    {
+        return $this->hasMany('App\Note');
+    }
+    public function user_checked_notes()
+    {
+        return $this->hasMany('App\UserCheckedNote');
+    }
 }

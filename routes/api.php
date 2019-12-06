@@ -22,16 +22,16 @@ Route::group(['middleware' => 'localization'], function(){
 //       return $request->user();
 //   });
 //
-  Route::post('login', 'UserController@login');
-  Route::post('register', 'UserController@register');
+    Route::post('login', 'UserController@login');
+    Route::post('register', 'UserController@register');
 //
 //
 //   Route::group(['middleware' => 'auth:api'], function(){
 //     Route::post('details', 'UserController@details');
 //   });
 //
-  // Route::get('contents', 'ContentController@index');
-  Route::resource('contents', 'ContentController');
+    // Route::get('contents', 'ContentController@index');
+    Route::resource('contents', 'ContentController');
 //   Route::resource('countries', 'CountriesController');
 //   Route::get('get_all_plan.php', 'PlanController@get_all_plan');
 //   Route::post('otp_verfiy.php', 'UserNotificationController@otp_verify');
@@ -41,38 +41,41 @@ Route::group(['middleware' => 'localization'], function(){
 //   Route::post('signup_step_2.php', 'UserController@signup_step_2');
 //   Route::post('signup_step_1.php', 'UserController@signup_step_1');
 //   Route::get('get_all_plan.php', 'PlanController@get_all_plan');
-  Route::post('complete_signup', 'UserController@complete_signup');
+    Route::post('complete_signup', 'UserController@complete_signup');
 //   Route::post('update_user_details.php', 'UserController@update_user_details');
-  Route::get('users/count', 'UserController@count');
+    Route::get('users/count', 'UserController@count');
 //   Route::post('users/auth_image_upload', 'UserController@authImageUpload');
 //
 
-  Route::group(['middleware' => ['activated', 'auth:api']], function(){
-    // resources
-    Route::resource('contacts', 'ContactController');
-    Route::resource('users', 'UserController');
-    Route::resource('job_titles', 'JobTitleController');
-    Route::resource('interests', 'InterestController');
-    Route::resource('activities', 'ActivityController');
-    Route::resource('user_requests', 'UserRequestController');
-    Route::resource('reports', 'ReportController');
-    // users
-    Route::get('users/state/random', 'UserRequestController@random_users');
-    Route::get('users/map', 'UserController@latlng');
-    Route::post('users/like/{other_user}', 'UserController@like');
-    Route::post('users/passcode/update', 'UserController@updatePassCode');
-    // contacts
-    Route::get('contacts/users/blocked', 'ContactController@blocked');
-    Route::post('contacts/{otherUser}/block', 'ContactController@block');
-    Route::delete('contacts/{otherUser}/unblock', 'ContactController@unBlock');
-    // notifications
-    Route::post('notifications/read/{notification_message}', 'NotificationMessageController@read');
-    Route::get('notifications', 'NotificationMessageController@index');
-    Route::get('notifications/unread/count', 'NotificationMessageController@unreadCount');
-    // settings
-    Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
-    Route::post('image_upload', 'UserController@uploadImage');
+    Route::group(['middleware' => ['activated', 'auth:api']], function(){
+        // resources
+        Route::resource('contacts', 'ContactController');
+        Route::resource('users', 'UserController');
+        Route::resource('job_titles', 'JobTitleController');
+        Route::resource('interests', 'InterestController');
+        Route::resource('activities', 'ActivityController');
+        Route::resource('user_requests', 'UserRequestController');
+        Route::resource('reports', 'ReportController');
+        // users
+        Route::get('users/state/random', 'UserRequestController@random_users');
+        Route::get('users/map', 'UserController@latlng');
+        Route::post('users/like/{other_user}', 'UserController@like');
+        Route::post('users/passcode/update', 'UserController@updatePassCode');
+        // contacts
+        Route::get('contacts/users/blocked', 'ContactController@blocked');
+        Route::post('contacts/{otherUser}/block', 'ContactController@block');
+        Route::delete('contacts/{otherUser}/unblock', 'ContactController@unBlock');
+        // notifications
+        Route::post('notifications/read/{notification_message}', 'NotificationMessageController@read');
+        Route::get('notifications', 'NotificationMessageController@index');
+        Route::get('notifications/unread/count', 'NotificationMessageController@unreadCount');
+        // settings
+        Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
+        Route::post('image_upload', 'UserController@uploadImage');
 
+        Route::resource('notes', 'NoteController');
+        Route::post('notes/view', 'NoteController@viewNote');
+        Route::post('notes/hideShowNote', 'NoteController@hideShowNote');
 //     Route::get('get_my_receive_request.php', 'UserController@get_my_receive_request');
 //     Route::get('get_my_pending_sent_requests.php', 'UserController@get_my_pending_sent_requests');
 //     Route::get('get_my_whatsnum_contacts.php', 'UserController@get_my_whatsnum_contacts');
@@ -105,9 +108,9 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::post('mail/support/send', 'MailingController@support');
 //     Route::post('users/delete', 'UserController@delete');
 //     // Route::get('activities/{id}/user_request', 'ActivityController@userRequest');
-    // Route::post('register', 'UserController@register');
+        // Route::post('register', 'UserController@register');
 //
-  });
+    });
 //
 });
 //
@@ -118,10 +121,10 @@ use App\User;
 // use App\Plan;
 // use App\UserRequest;
 Route::get('test', function(Request $request){
-  $user = User::findOrFail(1);
-  $updates = $request->all();
-  \App\Notification::DeviceTokenStore_1_Signal($user, 'android', "ee3c6b83-fc80-4d21-903a-3953659f878c");
-  return $user;
+    $user = User::findOrFail(1);
+    $updates = $request->all();
+    \App\Notification::DeviceTokenStore_1_Signal($user, 'android', "ee3c6b83-fc80-4d21-903a-3953659f878c");
+    return $user;
 });
 Route::get('app/2019/reset', function(Request $request){
 //   shell_exec('composer dump-autolad');
@@ -130,7 +133,7 @@ Route::get('app/2019/reset', function(Request $request){
 //   Artisan::call('cache:clear');
 //   Artisan::call('route:clear');
 //   Artisan::call('config:cache');
-  // Artisan::call('app:reset');
+    // Artisan::call('app:reset');
 });
 //
 // Route::get('cache-clear', function(Request $request){

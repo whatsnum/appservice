@@ -121,5 +121,4 @@ class NotificationController extends Controller
     //   } else {
     //     return array('success'=>'false','msg' =>array(trans('messages.msg_invalid_otp')));
     //   }
-    }
 }
