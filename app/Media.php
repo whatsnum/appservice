@@ -3,8 +3,9 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Intervention\Image\Facades\Image;
 
-class Media extends Model
+class Media extends Image
 {
   protected $fillable = ['id',	'model_type',	'model_id',	'collection_name',	'name',	'file_name',	'mime_type',	'disk',	'size',	'manipulations',	'custom_properties',	'responsive_images',	'order_column'];
 
@@ -25,6 +26,16 @@ class Media extends Model
     //   'file' => $path,
     //   'file_name' => $file_name,
     // ];
+  }
+
+  public static function ImageUpload($imageInput){
+    // $image = self::make($imageInput);
+
+    return self::make($imageInput);
+  }
+
+  public static function test($imageInput){
+    dd(self::ImageUpload($imageInput));
   }
 
   public static function image64($image) {

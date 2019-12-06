@@ -47,31 +47,37 @@ Route::group(['middleware' => 'localization'], function(){
 //   Route::post('users/auth_image_upload', 'UserController@authImageUpload');
 //
 
-    Route::group(['middleware' => ['activated', 'auth:api']], function(){
-        // resources
-        Route::resource('contacts', 'ContactController');
-        Route::resource('users', 'UserController');
-        Route::resource('job_titles', 'JobTitleController');
-        Route::resource('interests', 'InterestController');
-        Route::resource('activities', 'ActivityController');
-        Route::resource('user_requests', 'UserRequestController');
-        Route::resource('reports', 'ReportController');
-        // users
-        Route::get('users/state/random', 'UserRequestController@random_users');
-        Route::get('users/map', 'UserController@latlng');
-        Route::post('users/like/{other_user}', 'UserController@like');
-        Route::post('users/passcode/update', 'UserController@updatePassCode');
-        // contacts
-        Route::get('contacts/users/blocked', 'ContactController@blocked');
-        Route::post('contacts/{otherUser}/block', 'ContactController@block');
-        Route::delete('contacts/{otherUser}/unblock', 'ContactController@unBlock');
-        // notifications
-        Route::post('notifications/read/{notification_message}', 'NotificationMessageController@read');
-        Route::get('notifications', 'NotificationMessageController@index');
-        Route::get('notifications/unread/count', 'NotificationMessageController@unreadCount');
-        // settings
-        Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
-        Route::post('image_upload', 'UserController@uploadImage');
+  Route::group(['middleware' => ['activated', 'auth:api']], function(){
+    // resources
+    Route::resource('contacts', 'ContactController');
+    Route::resource('users', 'UserController');
+    Route::resource('job_titles', 'JobTitleController');
+    Route::resource('interests', 'InterestController');
+    Route::resource('activities', 'ActivityController');
+    Route::resource('user_requests', 'UserRequestController');
+    Route::resource('reports', 'ReportController');
+    Route::resource('messages', 'MessageController');
+    Route::resource('conversations', 'ConversationController');
+    Route::resource('settings', 'SettingController');
+    // users
+    Route::get('users/state/random', 'UserRequestController@random_users');
+    Route::get('users/map', 'UserController@latlng');
+    Route::post('users/like/{other_user}', 'UserController@like');
+    Route::post('users/passcode/update', 'UserController@updatePassCode');
+    // contacts
+    Route::get('contacts/users/blocked', 'ContactController@blocked');
+    Route::post('contacts/{otherUser}/block', 'ContactController@block');
+    Route::delete('contacts/{otherUser}/unblock', 'ContactController@unBlock');
+    // notifications
+    Route::post('notifications/read/{notification_message}', 'NotificationMessageController@read');
+    Route::get('notifications', 'NotificationMessageController@index');
+    Route::get('notifications/unread/count', 'NotificationMessageController@unreadCount');
+    // settings
+    Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
+    Route::post('image_upload', 'UserController@uploadImage');
+    Route::post('settings/change', 'SettingController@change');
+    // messages
+    // Route::get('messages/thread/{thread}', 'MessageController@thread');
 
         Route::resource('notes', 'NoteController');
         Route::post('notes/view', 'NoteController@viewNote');
@@ -102,8 +108,6 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::get('users/new', 'UserRequestController@new_users');
 //     Route::get('users/valid', 'UserController@validIds');
 //     Route::post('users/regard', 'UserController@regard');
-//     Route::resource('settings', 'SettingController');
-//     Route::post('settings/change', 'SettingController@change');
 //     Route::get('mail/support/view', 'MailingController@view');
 //     Route::post('mail/support/send', 'MailingController@support');
 //     Route::post('users/delete', 'UserController@delete');

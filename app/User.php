@@ -9,8 +9,8 @@ use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Spatie\MediaLibrary\File;
 use Spatie\MediaLibrary\Models\Media;
-use Laravel\Passport\HasApiTokens;
 use Spatie\Image\Image;
+use Laravel\Passport\HasApiTokens;
 
 use App\Plan;
 use App\UserPlan;
@@ -46,7 +46,7 @@ class User extends Authenticatable implements HasMedia
     protected $hidden = [
         'password', 'remember_token',
         'email_verified_at',
-        'media'
+        'media', 'pivot'
     ];
 
     /**
@@ -113,7 +113,7 @@ class User extends Authenticatable implements HasMedia
 
     public function withPhotoUrl(){
       $images = new \stdClass();
-      $types = ['cover', 'avatar', 'images'];
+      $types = ['avatar', 'images'];
 
       foreach ($types as $image) {
         if ($image === 'images') {
@@ -209,14 +209,6 @@ class User extends Authenticatable implements HasMedia
       } else {
         return $this;
       }
-    }
-
-    public function settings(){
-      return $this->hasMany(Setting::class);
-    }
-
-    public function notifications(){
-      return $this->morphMany(Notification::class, 'notifiable');
     }
 
     public function uploadImage($media_file, $type, $request = false, $action = false){
@@ -651,19 +643,31 @@ class User extends Authenticatable implements HasMedia
     }
 
     public function checkBetween(User $other_user){
-      return $this->requests()->where('other_user_id', $other_user->id)
-      // ->where()
-      ->orWhere('user_id', $other_user->id)
-      // ->where('status', 'pending')->orWhere('status', 'accepted')
-      ->first();
+      return UserRequest::where(function($q) use($other_user){
+        $q->where('user_id', $this->id)->where('other_user_id', $other_user->id)->where(function($q){
+          $q->where('status', 'pending')->orWhere('status', 'accepted');
+        });
+      })
+      ->orWhere(function($q) use($other_user){
+        $q->where('user_id', $other_user->id)->where('other_user_id', $this->id)->where(function($q){
+          $q->where('status', 'pending')->orWhere('status', 'accepted');
+        });
+      });
+
+      // return $this->requests()->where('other_user_id', $other_user->id)
+      // // ->where()
+      // ->orWhere('user_id', $other_user->id)
+      // // ->where('status', 'pending')->orWhere('status', 'accepted')
+      // ->first();
     }
 
     public function checkRequestExists(User $other_user){
-      return $this->requests()->where('other_user_id', $other_user->id)
-      // ->where()
-      ->orWhere('user_id', $other_user->id)
-      ->where('status', 'pending')->orWhere('status', 'accepted')
-      ->get();
+      return $this->checkBetween($other_user);
+      // return $this->requests()->where('other_user_id', $other_user->id)
+      // // ->where()
+      // ->orWhere('user_id', $other_user->id)
+      // ->where('status', 'pending')->orWhere('status', 'accepted')
+      // ->get();
     }
 
     public function requestNotificationData(User $other_user){
@@ -686,11 +690,14 @@ class User extends Authenticatable implements HasMedia
 
     public function toggleDirectMessage($bool){
       Setting::updateSetting($this, 'direct_message', $bool);
-      // $this->direct_message = !$this->direct_message;
-      // $this->save();
       return $this;
-      // ->myDetails();
     }
+
+    public function updateSetting($name, $value){
+      Setting::updateSetting($this, $name, $value);
+      return $this;
+    }
+
 
     public function registerMediaCollections(Media $media = null){
       $this->addMediaCollection('avatar')
@@ -740,6 +747,42 @@ class User extends Authenticatable implements HasMedia
     //   return $this->hasMany(Group::class);
     // }
 
+    // public function conversation(User $otherUser){
+    //   return $this->conversations()->whereHas('participants', function($q) use($otherUser){
+    //     $q->where('user_id', $otherUser->id);
+    //   })->first();
+    // }
+
+    public function conversations(User $otherUser = null){
+      if ($otherUser) {
+        return $this->conversations()->whereHas('participants', function($q) use($otherUser){
+          $q->where('user_id', $otherUser->id);
+        });
+      } else {
+        return $this->belongsToMany(Conversation::class, 'conversation_users')->withTimestamps();
+      }
+    }
+
+    // public function messages(){
+    //   return $this->hasManyThrough(Message::class, ConversationUser::class);
+    // }
+
+    public function settings(){
+      return $this->hasMany(Setting::class);
+    }
+
+    public function notifications(){
+      return $this->morphMany(Notification::class, 'notifiable');
+    }
+
+    public function conversation_messages(){
+      return $this->hasMany(Message::class);
+    }
+
+    public function converse(){
+      return $this->morphMany(Conversation::class, 'conversable');
+    }
+
     public function contacts(){
       return $this->hasMany(Contact::class)->where('type', 'friend')->orWhere(function($q){
         $q->where('type', 'friend')->where('other_user_id', $this->id);
@@ -788,6 +831,10 @@ class User extends Authenticatable implements HasMedia
 
     public function requests(){
       return $this->hasMany(UserRequest::class, 'other_user_id');
+    }
+
+    public function request(){
+      return $this->hasMany(UserRequest::class, 'user_id');
     }
 
     public function requests_pending(){
