@@ -112,7 +112,7 @@ class NoteController extends Controller
             $storage_path = 'public/notes/'.$user->id;
             $file_name = rand() .'.'. $extension;
             $path = $file->storeAs($storage_path, $file_name);
-            $media_url = str_replace('public', 'storage', $path);
+            $media_url = str_replace('public', '', $path);
         }
 
         $note = new Note();
