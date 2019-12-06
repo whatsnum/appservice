@@ -38,7 +38,7 @@ class ReportController extends Controller
       $request->validate([
         'reportable_id'     => 'required',
         'reportable_type'   => 'required',
-        'comment'           => 'required',
+        'comment'           => '',
       ]);
 
       $reportable_id    = $request->reportable_id;

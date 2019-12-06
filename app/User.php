@@ -113,7 +113,7 @@ class User extends Authenticatable implements HasMedia
 
     public function withPhotoUrl(){
       $images = new \stdClass();
-      $types = ['cover', 'avatar', 'images'];
+      $types = ['avatar', 'images'];
 
       foreach ($types as $image) {
         if ($image === 'images') {
@@ -209,14 +209,6 @@ class User extends Authenticatable implements HasMedia
       } else {
         return $this;
       }
-    }
-
-    public function settings(){
-      return $this->hasMany(Setting::class);
-    }
-
-    public function notifications(){
-      return $this->morphMany(Notification::class, 'notifiable');
     }
 
     public function uploadImage($media_file, $type, $request = false, $action = false){
@@ -698,11 +690,14 @@ class User extends Authenticatable implements HasMedia
 
     public function toggleDirectMessage($bool){
       Setting::updateSetting($this, 'direct_message', $bool);
-      // $this->direct_message = !$this->direct_message;
-      // $this->save();
       return $this;
-      // ->myDetails();
     }
+
+    public function updateSetting($name, $value){
+      Setting::updateSetting($this, $name, $value);
+      return $this;
+    }
+
 
     public function registerMediaCollections(Media $media = null){
       $this->addMediaCollection('avatar')
@@ -771,6 +766,14 @@ class User extends Authenticatable implements HasMedia
     // public function messages(){
     //   return $this->hasManyThrough(Message::class, ConversationUser::class);
     // }
+
+    public function settings(){
+      return $this->hasMany(Setting::class);
+    }
+
+    public function notifications(){
+      return $this->morphMany(Notification::class, 'notifiable');
+    }
 
     public function conversation_messages(){
       return $this->hasMany(Message::class);

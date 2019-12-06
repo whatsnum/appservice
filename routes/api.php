@@ -58,6 +58,7 @@ Route::group(['middleware' => 'localization'], function(){
     Route::resource('reports', 'ReportController');
     Route::resource('messages', 'MessageController');
     Route::resource('conversations', 'ConversationController');
+    Route::resource('settings', 'SettingController');
     // users
     Route::get('users/state/random', 'UserRequestController@random_users');
     Route::get('users/map', 'UserController@latlng');
@@ -74,6 +75,7 @@ Route::group(['middleware' => 'localization'], function(){
     // settings
     Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
     Route::post('image_upload', 'UserController@uploadImage');
+    Route::post('settings/change', 'SettingController@change');
     // messages
     // Route::get('messages/thread/{thread}', 'MessageController@thread');
 
@@ -103,8 +105,6 @@ Route::group(['middleware' => 'localization'], function(){
 //     Route::get('users/new', 'UserRequestController@new_users');
 //     Route::get('users/valid', 'UserController@validIds');
 //     Route::post('users/regard', 'UserController@regard');
-//     Route::resource('settings', 'SettingController');
-//     Route::post('settings/change', 'SettingController@change');
 //     Route::get('mail/support/view', 'MailingController@view');
 //     Route::post('mail/support/send', 'MailingController@support');
 //     Route::post('users/delete', 'UserController@delete');
