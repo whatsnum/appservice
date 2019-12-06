@@ -82,4 +82,33 @@ class SettingController extends Controller
     {
         //
     }
+
+    public function change(Request $request){
+      $user = $request->user();
+      $request->validate([
+        'name' => 'required',
+        'value' => 'required',
+      ]);
+
+      $name = $request->name;
+      $value = $request->value;
+      $value = $value == 'true' ? true : ($value == 'false' ? false : $value);
+      // dd($value);
+
+      if(in_array($name, ['show_on_map', 'max_distance', 'read_receipt', 'last_seen', 'show_online'])){
+        if ($request->name == 'show_on_map') {
+          try {
+            $user = Setting::toggleShowOnMap($user);
+          } catch (\Exception $e) {
+            return $this->err($e);
+          }
+        } else {
+          // $user = Setting::updateSetting($user, $name, $value);
+          $user->updateSetting($name, $value);
+        }
+        return ['status' => !!$user, 'user' => $user];
+      } else {
+        return ['status' => false, 'msg' => trans('msg.not_settings')];
+      }
+    }
 }

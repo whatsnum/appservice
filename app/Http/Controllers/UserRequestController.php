@@ -55,8 +55,9 @@ class UserRequestController extends Controller
       }
 
       // request exists between users
-      if ($exists = $user->checkRequestExists($other_user)) {
-        $exists = $exists->first();
+      if ($exists = $user->checkRequestExists($other_user)->first()) {
+        // dd($user->id, $other_user->id, $exists->pluck('user_id'));
+        // $exists = $exists->first();
         $continue = false;
 
         if ($exists->status == 'pending') {
@@ -70,15 +71,8 @@ class UserRequestController extends Controller
           $status = true;
           $msg = trans('messages.request_sent');
         }
-
-        // if ($exists->status == 'accepted') {
-        //   // $msg = trans('messages.request_sent_accepted');
-        //   $continue = true;
-        //   $update = true;
-        // }
-        // return ['status'=> false,'msg'=>$msg];
       } else {
-        $created = $user->requests()->create([
+        $created = $user->request()->create([
         'other_user_id'  => $other_user_id,
         ]);
 
