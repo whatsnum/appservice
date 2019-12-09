@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Conversation;
 use Illuminate\Http\Request;
+use App\User;
 
 class ConversationController extends Controller
 {
@@ -121,5 +122,14 @@ class ConversationController extends Controller
 
       return ['status' => true, 'msg' => trans('msg.deleted'), 'conversation' => $conversation];
 
+    }
+
+    public function images(Request $request, User $otherUser){
+      $user = $request->user();
+      $images = $user->imageMessages($otherUser)->get();
+      $images = $images->map(function($img){
+        return $img->withImageUrl()->image;
+      });
+      return ['status' => true, 'images' => $images];
     }
 }
