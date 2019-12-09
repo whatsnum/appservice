@@ -83,6 +83,14 @@ class Message extends Model implements HasMedia
     return $this->belongsTo(Message::class, 'reply');
   }
 
+  public function medias(){
+    return $this->morphMany(Media::class, 'model');
+  }
+
+  public function media_images(){
+    return $this->medias()->where('name', 'image');
+  }
+
   public function registerMediaCollections(Media $media = null){
     $this->addMediaCollection('image')
     ->acceptsMimeTypes(['image/jpeg', 'image/png'])

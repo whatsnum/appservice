@@ -79,10 +79,12 @@ Route::group(['middleware' => 'localization'], function(){
     Route::post('settings/change', 'SettingController@change');
     // messages
     // Route::get('messages/thread/{thread}', 'MessageController@thread');
-
-        Route::resource('notes', 'NoteController');
-        Route::post('notes/view', 'NoteController@viewNote');
-        Route::post('notes/hideShowNote', 'NoteController@hideShowNote');
+    // notes
+    Route::resource('notes', 'NoteController');
+    Route::post('notes/view', 'NoteController@viewNote');
+    Route::post('notes/hideShowNote', 'NoteController@hideShowNote');
+    // conversations
+    Route::get('conversations/images/{otherUser}', 'ConversationController@images');
 //     Route::get('get_my_receive_request.php', 'UserController@get_my_receive_request');
 //     Route::get('get_my_pending_sent_requests.php', 'UserController@get_my_pending_sent_requests');
 //     Route::get('get_my_whatsnum_contacts.php', 'UserController@get_my_whatsnum_contacts');

@@ -627,7 +627,8 @@ class UserController extends Controller
     $user = $request->user();
     $otherUser->withUserRequestStatus($user)
     ->withInterestsCount($user)
-    ->withMessageMediaCount($user);
+    ->withDistatnce($user)
+    ->withMessageImageCount($user);
 
     return ['success'=> true, 'otherUser'=>$otherUser];
   }

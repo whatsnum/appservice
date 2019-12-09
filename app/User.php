@@ -253,6 +253,39 @@ class User extends Authenticatable implements HasMedia
       $query->selectRaw("*, ".$sql);
       return $query;
     }
+
+    public function withDistatnce(User $otherUser){
+      $lat = $this->lat;
+      $lng = $this->lng;
+
+      $lati = $otherUser->lat;
+      $lngi = $otherUser->lng;
+
+      $calc = 1.1515 * 1.609344;
+
+      $distance = (acos(sin($lati * pi() / 180) * sin($lat * pi() / 180) + cos($lati * pi() / 180) * cos($lat * pi() / 180) * cos(($lati - $lng) * pi() / 180)) * 180 / pi()) * 60 * $calc;
+
+      $this->distance = $distance;
+      return $this;
+    }
+
+    public function conversationMedias(User $user, Array $mediaType = []){
+      $conversation = $this->conversations($user)->first();
+      return $conversation->messages()->whereHas('media');
+    }
+
+    public function imageMessages(User $user){
+      return $this->conversationMedias($user)->whereHas('media_images');
+    }
+
+    public function imageMessagesCount(User $user){
+      return $this->imageMessages($user)->count();
+    }
+
+    public function withMessageImageCount(User $user){
+      $this->message_images_count = $this->imageMessagesCount($user);
+      return $this;
+    }
     //
     // public function deleteMyActivities(){
     //   $activities = $this->activities;
