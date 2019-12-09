@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\NoteEvent;
 use Illuminate\Http\Request;
 
 /*
@@ -126,8 +127,9 @@ use App\User;
 // use App\UserRequest;
 Route::get('test', function(Request $request){
     $user = User::findOrFail(1);
-    $updates = $request->all();
-    \App\Notification::DeviceTokenStore_1_Signal($user, 'android', "ee3c6b83-fc80-4d21-903a-3953659f878c");
+//    $updates = $request->all();
+//    \App\Notification::DeviceTokenStore_1_Signal($user, 'android', "ee3c6b83-fc80-4d21-903a-3953659f878c");
+    event(new NoteEvent($user, 'note.updated'));
     return $user;
 });
 Route::get('app/2019/reset', function(Request $request){

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Note;
 use App\UserCheckedNote;
+use App\Events\NoteEvent;
 
 class NoteController extends Controller
 {
@@ -50,17 +51,25 @@ class NoteController extends Controller
                 }
                 $_notes = Note::sortByDate($_notes);
 
-                $_recent_note = $_notes->first();
-                if ($_recent_note) {
-                    $_hidden = UserCheckedNote::where('note_id', $_recent_note->id)->where('user_id', $user_id)->where('hide', true)->count();
+
+                $first = $_notes->first();
+                if ($first) {
+                    $_hidden = UserCheckedNote::where('note_id', $first->id)->where('user_id', $user_id)->where('hide', true)->count();
                     if ($_hidden > 0) {
-                        $hidden_notes[] = $_recent_note;
+                        $hidden_notes[] = $_notes->values();
                     } else {
-                        $length = UserCheckedNote::where('note_id', $_recent_note->id)->where('user_id', $user_id)->count();
-                        if ($length > 0) {
-                            $viewed_notes[] = $_recent_note;
+                        $length = $_notes -> count();
+                        $_length = 0;
+                        foreach ($_notes as $_note) {
+                            $exist = UserCheckedNote::where('note_id', $_note->id)->where('user_id', $user_id)->count();
+                            if ($exist > 0) {
+                                $_length++;
+                            }
+                        }
+                        if ($length == $_length) {
+                            $viewed_notes[] = $_notes->values();
                         } else {
-                            $new_notes[] = $_recent_note;
+                            $new_notes[] = $_notes->values();
                         }
                     }
                 }
@@ -75,23 +84,13 @@ class NoteController extends Controller
             'user' => $user];
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
-        //
+
 
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         //
@@ -112,7 +111,7 @@ class NoteController extends Controller
             $storage_path = 'public/notes/'.$user->id;
             $file_name = rand() .'.'. $extension;
             $path = $file->storeAs($storage_path, $file_name);
-            $media_url = str_replace('public', 'storage', $path);
+            $media_url = str_replace('public', '', $path);
         }
 
         $note = new Note();
@@ -123,38 +122,18 @@ class NoteController extends Controller
         $note->title = $title;
         $note->duration = $duration;
         $note->save();
+        event(new NoteEvent($user, 'note.created'));
         return ['success' => true, 'note'=>$note];
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Note  $note
-     * @return \Illuminate\Http\Response
-     */
     public function show(Note $note)
     {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Note  $note
-     * @return \Illuminate\Http\Response
-     */
+    }
     public function edit(Note $note)
     {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Note  $note
-     * @return \Illuminate\Http\Response
-     */
+    }
     public function update(Request $request, Note $note)
     {
 
@@ -163,21 +142,15 @@ class NoteController extends Controller
     public function viewNote(Request $request)
     {
         $user = $request->user();
-        $note_ids = $request->note_ids;
-        foreach ($note_ids as $note_id) {
-            $note = Note::find($note_id);
-            $hide = $request->hide || $note->hide;
-//        return ['success' => true, 'note' => $request->all()];
-            $user_checked_note = $user->user_checked_notes()->where('note_id', $note_id)->first();
-            if (!$user_checked_note) {
-                $user_checked_note = new UserCheckedNote();
-            }
-            $user_checked_note->user_id = $user->id;
-            $user_checked_note->note_id = $note_id;
-            $user_checked_note->hide = $hide || false;
-            $user_checked_note->save();
+        $note_id = $request->note_id;
+        $user_checked_note = $user->user_checked_notes()->where('note_id', $note_id)->first();
+        if (!$user_checked_note) {
+            $user_checked_note = new UserCheckedNote();
         }
-
+        $user_checked_note->user_id = $user->id;
+        $user_checked_note->note_id = $note_id;
+        $user_checked_note->save();
+        event(new NoteEvent($user, 'note.updated'));
         return ['success' => true];
     }
 
@@ -201,22 +174,20 @@ class NoteController extends Controller
         return ['success' => true];
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Note  $note
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Note $note)
+    public function destroy(Request $request, Note $note)
     {
-        //
-        $delete = $note->delete();
+        $user = $request->user();
+
         /** Delete file if it exists*/
         if ($note->media_url) {
-            if(File::exists($note->media_url)) {
-                File::delete($note->media_url);
+            $path = 'storage'.$note->media_url;
+            if(File::exists($path)) {
+                File::delete($path);
             }
         }
+
+        $delete = $note->delete();
+        event(new NoteEvent($user, 'note.updated'));
         $msg = $delete ? trans('msg.deleted') : trans('msg.not_deleted');
         return ['status' => $delete, 'msg' => $msg];
     }
