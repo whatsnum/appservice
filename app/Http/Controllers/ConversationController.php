@@ -126,10 +126,13 @@ class ConversationController extends Controller
 
     public function images(Request $request, User $otherUser){
       $user = $request->user();
-      $images = $user->imageMessages($otherUser)->get();
-      $images = $images->map(function($img){
-        return $img->withImageUrl()->image;
-      });
-      return ['status' => true, 'images' => $images];
+      $images = $user->imageMessages($otherUser);
+      if ($images) {
+        $images = $images->get()->map(function($img){
+          return $img->withImageUrl()->image;
+        });
+      }
+
+      return ['status' => true, 'images' => $images ?? []];
     }
 }

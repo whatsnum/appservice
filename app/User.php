@@ -271,15 +271,26 @@ class User extends Authenticatable implements HasMedia
 
     public function conversationMedias(User $user, Array $mediaType = []){
       $conversation = $this->conversations($user)->first();
+      if (!$conversation) {
+        return $conversation;
+      }
       return $conversation->messages()->whereHas('media');
     }
 
     public function imageMessages(User $user){
-      return $this->conversationMedias($user)->whereHas('media_images');
+      $msgs = $this->conversationMedias($user);
+      if (!$msgs) {
+        return $msgs;
+      }
+      return $msgs->whereHas('media_images');
     }
 
     public function imageMessagesCount(User $user){
-      return $this->imageMessages($user)->count();
+      $msgs = $this->imageMessages($user);
+      if (!$msgs) {
+        return 0;
+      }
+      return $msgs->count();
     }
 
     public function withMessageImageCount(User $user){
