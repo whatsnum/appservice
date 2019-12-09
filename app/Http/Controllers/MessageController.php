@@ -137,6 +137,6 @@ class MessageController extends Controller
         $message->deletedBy($user);
       }
 
-      return ['status' => true, 'message' => $message];
+      return ['status' => true, 'message' => $message->withImageUrl()];
     }
 }

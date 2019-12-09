@@ -121,7 +121,7 @@ class UserRequestController extends Controller
      */
     public function update(Request $request, UserRequest $userRequest)
     {
-      $request->validate(['action' => 'required']);
+      $request->validate(['action' => 'required|boolean']);
       $action = $request->action;
       $user = $request->user();
       $otherUser = $userRequest->requester()->first();
