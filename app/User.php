@@ -249,7 +249,7 @@ class User extends Authenticatable implements HasMedia
       $lonName = 'lng';
       $calc = 1.1515 * 1.609344;
 
-      $sql = "((ACOS(SIN($latitude * PI() / 180) * SIN($latName * PI() / 180) + COS($latitude * PI() / 180) * COS($latName * PI() / 180) * COS(($longitude - $lonName ) * PI() / 180)) * 180 / PI()) * 60 * $calc) as distance";
+      $sql = "ROUND(((ACOS(SIN($latitude * PI() / 180) * SIN($latName * PI() / 180) + COS($latitude * PI() / 180) * COS($latName * PI() / 180) * COS(($longitude - $lonName ) * PI() / 180)) * 180 / PI()) * 60 * $calc)) as distance";
       $query->selectRaw("*, ".$sql);
       return $query;
     }
@@ -263,7 +263,7 @@ class User extends Authenticatable implements HasMedia
 
       $calc = 1.1515 * 1.609344;
 
-      $distance = (acos(sin($lati * pi() / 180) * sin($lat * pi() / 180) + cos($lati * pi() / 180) * cos($lat * pi() / 180) * cos(($lati - $lng) * pi() / 180)) * 180 / pi()) * 60 * $calc;
+      $distance = round((acos(sin($lati * pi() / 180) * sin($lat * pi() / 180) + cos($lati * pi() / 180) * cos($lat * pi() / 180) * cos(($lati - $lng) * pi() / 180)) * 180 / pi()) * 60 * $calc, 0);
 
       $this->distance = $distance;
       return $this;
