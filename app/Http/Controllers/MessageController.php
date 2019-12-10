@@ -90,9 +90,11 @@ class MessageController extends Controller
      * @param  \App\Message  $message
      * @return \Illuminate\Http\Response
      */
-    public function show(Message $message)
+    public function show(Request $request, Message $message)
     {
-        //
+      $user = $request->user();
+      $this->authorize('view', $message);
+      return $message;
     }
 
     /**

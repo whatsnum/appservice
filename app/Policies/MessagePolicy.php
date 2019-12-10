@@ -30,7 +30,7 @@ class MessagePolicy
      */
     public function view(User $user, Message $message)
     {
-        //
+      return $user->id == $message->user_id || in_array($user->id, $message->conversation()->participants()->pluck('user_id')->toArray());
     }
 
     /**
