@@ -65,6 +65,7 @@ Route::group(['middleware' => 'localization'], function(){
     Route::get('users/map', 'UserController@latlng');
     Route::post('users/like/{other_user}', 'UserController@like');
     Route::post('users/passcode/update', 'UserController@updatePassCode');
+    Route::put('users/user_requests/{otherUser}', 'UserController@attemptRequest');
     // contacts
     Route::get('contacts/users/blocked', 'ContactController@blocked');
     Route::post('contacts/{otherUser}/block', 'ContactController@block');

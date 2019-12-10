@@ -632,6 +632,25 @@ class UserController extends Controller
 
     return ['success'=> true, 'otherUser'=>$otherUser];
   }
+
+  public function attemptRequest(Request $request, User $otherUser){
+    $user = $request->user();
+    $action = $request->action;
+    $user_request = $otherUser->request()->where('status', 'pending')->where('other_user_id', $user->id)->first();
+    if($user_request){
+      $update = $user_request->update(['status' => $action == true ? 'accepted' : 'rejected']);
+      if ($update && $action == true) {
+        // create contact
+        $otherUser->contacts()->create(['other_user_id' => $user->id]);
+      }
+      $msg = $update ? trans('msg.updated') : trans('msg.not_updated');
+      return ['status' => $update, 'msg' => $msg, 'user_request' => $user_request];
+    } else {
+      return ['status' => false, 'msg' => trans('msg.no_request')];
+    }
+  }
+
+
   //
   // public function search_modal(Request $request){
   //   $validate = $this->validates($request, [
