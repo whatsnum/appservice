@@ -41,9 +41,9 @@ class MessageController extends Controller
       $user = $request->user();
       $request->validate([
         'other_user_id' => 'required',
-        'message' => 'string',
-        'image' => 'imageable',
-        'gif' => 'url',
+        'message' => 'string|nullable',
+        'image' => 'imageable|nullable',
+        'gif' => 'url|nullable',
         // 'video' => 'mimetypes:video/avi,video/mpeg,video/quicktime'
       ]);
 
