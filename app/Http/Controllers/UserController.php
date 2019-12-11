@@ -650,6 +650,18 @@ class UserController extends Controller
     }
   }
 
+  public function cancelRequest(Request $request, User $otherUser){
+    $user = $request->user();
+    $user_request = $user->request()->where('status', 'pending')->where('other_user_id', $otherUser->id)->first();
+    if($user_request){
+      $deleted = $user_request->delete();
+      $msg = $deleted ? trans('msg.deleted') : trans('msg.not_deleted');
+      return ['status' => $deleted, 'msg' => $msg, 'user_request' => $user_request];
+    } else {
+      return ['status' => false, 'msg' => trans('msg.no_request_pending')];
+    }
+  }
+
 
   //
   // public function search_modal(Request $request){
