@@ -43,15 +43,17 @@ class MessageController extends Controller
         'other_user_id' => 'required',
         'message' => 'string',
         'image' => 'imageable',
+        'gif' => 'url',
         // 'video' => 'mimetypes:video/avi,video/mpeg,video/quicktime'
       ]);
 
       // extract
       $image = $request->image;
       $video = $request->video;
+      $gif = $request->gif;
       $text = $request->message;
 
-      if (!$image && !$video && !$text) {
+      if (!$image && !$video && !$text && !$gif) {
         return ['status' => false, 'msg' => trans('msg.empty_msg')];
       }
 
@@ -70,6 +72,7 @@ class MessageController extends Controller
           'user_id' => $user->id,
           'reply' => $request->reply,
           'message' => $text,
+          'gif' => $gif,
         ]);
 
         if ($image) {
