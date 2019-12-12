@@ -51,7 +51,7 @@ class UserController extends Controller
         'country' => $country,
       ]);
 
-  		$notification =  Notification::DeviceTokenStore_1_Signal($user, $device_type, $player_id);
+  		$notification[] =  Notification::DeviceTokenStore_1_Signal($user, $device_type, $player_id);
 
       $token =  $user->createToken('MyApp');
 
@@ -61,7 +61,7 @@ class UserController extends Controller
         'expires_at' => Carbon::parse(
             $token->token->expires_at
         )->toDateTimeString(),
-        'notification'=>$notification,'user'=>$user->myDetails()
+        'notifications'=>$notification,'user'=>$user->myDetails()
       ];
 
     } else {
