@@ -18,8 +18,19 @@ class UserRequestController extends Controller
     public function index(Request $request)
     {
       $user = $request->user();
+      $type = $request->type;
 
-      return ['status' => true, 'requests' => $user->requests_pending()->paginate($request->pageSize ? $request->pageSize : 20)];
+      switch ($type) {
+        case 'sent':
+          $requests = $user->requested_pending();
+          break;
+        default:
+          $requests = $user->requests_pending();
+          break;
+      }
+      $requests = $requests->paginate($request->pageSize ? $request->pageSize : 20);
+
+      return ['status' => true, 'requests' => $requests];
     }
 
     /**
