@@ -18,20 +18,23 @@ class Media extends Image
     $file_name = rand() . '.png';
     $path = base_path().'/'.'images/'.$file_name;
 
-    // $file64 = self::image64($image);
     $success = file_put_contents($path, $data);
-    // return $file64;
     return $path;
-    // [
-    //   'file' => $path,
-    //   'file_name' => $file_name,
-    // ];
+  }
+
+  public static function formatBytes($size, $precision = 2){
+      $base = log($size, 1024);
+      $suffixes = array('B', 'KB', 'MB', 'GB', 'TB');
+
+      return round(pow(1024, $base - floor($base)), $precision) .' '. $suffixes[floor($base)];
   }
 
   public static function ImageUpload($imageInput){
-    // $image = self::make($imageInput);
-
     return self::make($imageInput);
+  }
+
+  public static function VideoUpload($videoInput){
+    return self::make($videoInput);
   }
 
   public static function test($imageInput){
@@ -39,16 +42,6 @@ class Media extends Image
   }
 
   public static function image64($image) {
-    // $png_url = "product-".time().".png";
-    // $path = public_path().'img/designs/' . $png_url;
-
-    // $file =
     return file_get_contents($image);
-
-    // Image::make(file_get_contents($data->base64_image))->save($path);
-    // $response = array(
-    //     'status' => 'success',
-    // );
-    // return Response::json( $response  );
  }
 }

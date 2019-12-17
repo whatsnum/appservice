@@ -44,16 +44,25 @@ class MessageController extends Controller
         'message' => 'string|nullable',
         'image' => 'imageable|nullable',
         'gif' => 'url|nullable',
-        // 'video' => 'mimetypes:video/avi,video/mpeg,video/quicktime'
+        'videos' => 'array',
+        'videos.*' => 'mimetypes:video/mp4,video/x-msvideo,video/3gpp,video/avi,video/mpeg,video/quicktime|max:40000'
       ]);
 
       // extract
       $image = $request->image;
-      $video = $request->video;
+      $videos = $request->videos;
       $gif = $request->gif;
       $text = $request->message;
 
-      if (!$image && !$video && !$text && !$gif) {
+      // foreach ($videos as $video) {
+      //   // dd($video);
+      //   dd($video->getRealPath(), $video->getClientOriginalExtension());
+      // }
+
+      // dd(\App\Media::formatBytes(552999, ));
+
+
+      if (!$image && !$videos && !$text && !$gif) {
         return ['status' => false, 'msg' => trans('msg.empty_msg')];
       }
 
@@ -75,10 +84,13 @@ class MessageController extends Controller
           'gif' => $gif,
         ]);
 
+        // $message = new Message;
+        // dd($message);
+
         if ($image) {
           $message->saveImage($image);
-        } else if ($video) {
-          $message->saveVideo($video);
+        } else if ($videos) {
+          $message->saveVideos($videos);
         }
 
         return ['status' => !!$message, 'message' => $message, 'msg' => trans($message ? 'msg.created' : 'msg.not_created')];

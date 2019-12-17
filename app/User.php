@@ -766,10 +766,10 @@ class User extends Authenticatable implements HasMedia
       // ->withResponsiveImages()
       ->performOnCollections('avatar', 'cover', 'images');
 
-      $this->addMediaConversion('medium')
-      ->width(400)->height(400)//->sharpen(10)
-      // ->withResponsiveImages()
-      ->performOnCollections('avatar', 'cover', 'images');
+      // $this->addMediaConversion('medium')
+      // ->width(400)->height(400)//->sharpen(10)
+      // // ->withResponsiveImages()
+      // ->performOnCollections('avatar', 'cover', 'images');
         //'image1', 'image2', 'image3', 'image4', 'image5',
       // ->nonOptimized();
     }

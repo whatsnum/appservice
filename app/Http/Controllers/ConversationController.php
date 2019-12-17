@@ -20,6 +20,16 @@ class ConversationController extends Controller
         $q->where('conversation_users.user_id', '!=', $user->id)->select('conversation_users.user_id as id');
       }])->withCount(['unread'])->get();
 
+
+
+      $conversations->map(function ($conv) {
+        // dd($conv->last_message->medias);
+        // dd($conv->last_message->medias()->exists());
+        if ($conv->last_message->medias()->exists()) {
+          $conv->last_message->withMedia();
+        }
+      });
+
       return ['status' => true, 'conversations' => $conversations];
     }
 
@@ -73,11 +83,13 @@ class ConversationController extends Controller
 
       $unread->update(['read_at' => now()]);
 
-      $messages = $conversation->messages()->with('replied')
+      $messages = $conversation->messages()->with('replied')->latest()
       // ->where("deleted_by->$user->id", null)
       ->paginate($this->paginate($request));
       $messages->map(function ($msg) {
-        $msg->withImageUrl();
+        if ($msg->medias()->exists()) {
+          $msg->withMedia();
+        }
       });
 
       return ['status' => true, 'messages' => $messages];
