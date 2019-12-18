@@ -54,14 +54,6 @@ class MessageController extends Controller
       $gif = $request->gif;
       $text = $request->message;
 
-      // foreach ($videos as $video) {
-      //   // dd($video);
-      //   dd($video->getRealPath(), $video->getClientOriginalExtension());
-      // }
-
-      // dd(\App\Media::formatBytes(552999, ));
-
-
       if (!$image && !$videos && !$text && !$gif) {
         return ['status' => false, 'msg' => trans('msg.empty_msg')];
       }

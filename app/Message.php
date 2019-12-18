@@ -47,6 +47,7 @@ class Message extends Model implements HasMedia
 
     $medias = [];
     foreach ($videos as $video) {
+    // $video = $videos;
       $collection = 'videos';
       $name = $collection;
       $ext = $video->getClientOriginalExtension();

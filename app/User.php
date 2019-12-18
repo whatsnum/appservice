@@ -505,8 +505,7 @@ class User extends Authenticatable implements HasMedia
     }
 
     public function withUserRequestStatus(User $user){
-      $status = UserRequest::usersRequestStatus($this, $user);
-      $this->request_detail = $status;
+      $this->request_detail = UserRequest::usersRequestStatus($this, $user);
       return $this;
     }
     //

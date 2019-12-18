@@ -299,11 +299,13 @@ class UserController extends Controller
   // }
   //
   public function index(Request $request){
+    $request->validate([
+      'search'    => 'string',
+      'pageSize'  => 'int',
+      'location'  => 'string',
+      'orderBy'   => 'string',
+    ]);
     $user = $request->user();
-
-    // $user = User::find(2801);
-    // $user = User::inRandomOrder()->first();
-
 
     $users = $user->Users($request)->paginate($request->pageSize ? $request->pageSize : 20);
     $users->map(function($u) use($user){
