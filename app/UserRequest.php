@@ -36,7 +36,7 @@ class UserRequest extends Model
 
   public static function usersRequestStatus(User $user, User $other_user){
     $user_id = $user->id;
-    $other_user_id = $other_user->user_id;
+    $other_user_id = $other_user->id;
     $status = self::where(function($q) use ($user_id, $other_user_id){
       $q->where('user_id', $user_id)->where('other_user_id', $other_user_id);
     })->orWhere(function($q) use ($other_user_id, $user_id){
