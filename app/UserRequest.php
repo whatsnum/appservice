@@ -60,6 +60,10 @@ class UserRequest extends Model
     }
   }
 
+  public static function withRequestDetail($stmt){
+    return $stmt->select()->addSelect(\DB::raw("(CASE WHEN user_requests.status = 'pending' THEN 'sent' ELSE CASE WHEN user_requests.status = 'accepted' THEN 'yes' ELSE 'no' END END) AS request_detail"));
+  }
+
   public static function checkFriendship($user_id, $other_user_id){
     return self::where('status', 'accept')->where(function($q) use ($user_id, $other_user_id){
       $q->where('user_id', $user_id)->where('other_user_id', $other_user_id)
@@ -85,4 +89,8 @@ class UserRequest extends Model
   public function requester(){
     return $this->belongsTo(User::class, 'user_id');
   }
+
+
+
+
 }
