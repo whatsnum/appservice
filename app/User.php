@@ -312,8 +312,12 @@ class User extends Authenticatable implements HasMedia
 
     public function withJobTitle($stmt = false){
       if ($stmt) {
-        return $stmt->addSelect(['user_metas.value as job_title'])
-        ->join('user_metas', 'user_metas.user_id', '=', 'users.id')
+        return $stmt
+        // ->with(['metas' => function ($q) {
+        //   $q->where('name', 'job_title')->select()->addSelect('value as job_title');
+        // }]);
+        ->leftJoin('user_metas', 'user_metas.user_id', '=', 'users.id')
+        ->addSelect(['user_metas.value as job_title', 'users.name as name'])
         ->where('user_metas.name', 'job_title');
       } else {
         $job_title = $this->job_title()->first();

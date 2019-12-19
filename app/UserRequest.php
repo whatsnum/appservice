@@ -61,7 +61,7 @@ class UserRequest extends Model
   }
 
   public static function withRequestDetail($stmt){
-    return $stmt->select()->addSelect(\DB::raw("(CASE WHEN user_requests.status = 'pending' THEN 'sent' ELSE CASE WHEN user_requests.status = 'accepted' THEN 'yes' ELSE 'no' END END) AS request_detail"));
+    return $stmt->with('requester')->select()->addSelect(\DB::raw("(CASE WHEN user_requests.status = 'pending' THEN 'sent' ELSE CASE WHEN user_requests.status = 'accepted' THEN 'yes' ELSE 'no' END END) AS request_detail"));
   }
 
   public static function checkFriendship($user_id, $other_user_id){
