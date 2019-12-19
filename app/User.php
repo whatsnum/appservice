@@ -107,6 +107,7 @@ class User extends Authenticatable implements HasMedia
     public function myDetails(){
       $this->load(['settings', 'plan']);
       $this->withPhotoUrl();
+      $this->withJobTitle();
       $this->withMetas();
       return $this;
     }
@@ -297,35 +298,27 @@ class User extends Authenticatable implements HasMedia
       $this->message_images_count = $this->imageMessagesCount($user);
       return $this;
     }
-    //
-    // public function deleteMyActivities(){
-    //   $activities = $this->activities;
-    //   $activities->map(function($a){
-    //     $a->forceDelete();
-    //   });
-    //   $posts = $this->posts;
-    //   $posts->map(function($p){
-    //     $p->activity->forceDelete();
-    //     $p->forceDelete();
-    //   });
-    //   return [$posts, $activities];
-    //   // $activities->forceDelete();
-    //   // $this->activities()->forceDelete();
-    // }
-    //
+
     private function withSearch($search, $stmt){
       if ($search) {
-        // $stmt->search($search);
-        $stmt->where('name', 'LIKE', '%'.$search.'%')
+        return $stmt->where('name', 'LIKE', '%'.$search.'%')
         ->orWhere('gender', 'LIKE', '%'.$search.'%')
-        // ->orWhere('phone', 'LIKE', '%'.$search.'%')
-        // interest and job title
-        // ->orWhere('interest', 'LIKE', '%'.$search.'%')
-        // ->orWhere('interest', 'LIKE', '%'.$search.'%')
-
         ->orWhere('state', 'LIKE', '%'.$search.'%')
         ->orWhere('city', 'LIKE', '%'.$search.'%')
         ->orWhere('country', 'LIKE', '%'.$search.'%');
+      }
+      return $stmt;
+    }
+
+    public function withJobTitle($stmt){
+      if ($stmt) {
+        return $stmt->addSelect(['user_metas.value as job_title'])
+        ->join('user_metas', 'user_metas.user_id', '=', 'users.id')
+        ->where('user_metas.name', 'job_title');
+      } else {
+        $job_title = $this->job_title()->first();
+        $this->job_title = $job_title ?? $job_title->value;
+        return $this;
       }
     }
 
@@ -348,9 +341,6 @@ class User extends Authenticatable implements HasMedia
     public function withFilters($request, $stmt){
       $state                = $request->state; //$this->state;
       $country              = $request->country; //$this->country;
-      // $direct_message       = $request->direct_message;
-      // $interest             = $request->interest;
-      // $relationship_status  = $request->relationship_status;
       $location             = $request->location;
 
       if ($location) {
@@ -360,27 +350,7 @@ class User extends Authenticatable implements HasMedia
         if ($location == 'world') {
           $stmt->where('country', '!=', $this->country);
         }
-        // $stmt->where('state', $state);
       }
-
-      // if ($state) {
-      //   $stmt->where('state', $state);
-      // }
-      // if ($country) {
-      //   $stmt->where('country', $country)->where('state', '!=', $this->state);
-      // }
-      // if ($direct_message) {
-      //   $stmt->where('direct_message', true);
-      // }
-      // if ($relationship_status) {
-      //   $stmt->whereHas('user_metas', function($q) use($relationship_status){
-      //     $q->where('name', 'relationship_status')->where('value', $relationship_status);
-      //   });
-      // }
-      // if ($interest) {
-      //   $stmt->where('interest', $interest);
-      // }
-
       return $stmt;
     }
     //
@@ -414,15 +384,18 @@ class User extends Authenticatable implements HasMedia
         $stmt->where('gender', $gender);
       }
 
+      $this->withJobTitle($stmt);
+
       if ($orderBy) {
         switch ($orderBy) {
           case 'job_title':
-            $stmt->select([
-              'user_metas.value as job_title',
-              'users.*'
-            ])
-            ->join('user_metas', 'user_metas.user_id', '=', 'users.id')
-            ->where('user_metas.name', 'job_title')
+            $stmt
+            // ->select([
+            //   'user_metas.value as job_title',
+            //   'users.*'
+            // ])
+            // ->join('user_metas', 'user_metas.user_id', '=', 'users.id')
+            // ->where('user_metas.name', 'job_title')
             ->orderBy('user_metas.value', 'ASC');
             break;
           // case 'name':
@@ -436,55 +409,7 @@ class User extends Authenticatable implements HasMedia
 
       return $stmt;
     }
-    //
-    // public function usersWithRequestPhoto($users){
-    //   if ($users) {
-    //     foreach($users as $user){
-    //       $user = $user->withCover()->withProfileUrl()->withUserRequestStatus($this);
-    //       $user->joined_interval = Activity::time_elapsed_string($user->createtime);
-    //     }
-    //   }
-    // }
-    //
-    // public function newUsers($request){
-    //   $gender         = $this->gender;
-    //   $other_gender   = $this->other_user_gender;
-    //   $state          = $this->state;
-    //   $country        = $this->country;
-    //   $min_age        = $this->other_user_min_age;
-    //   $max_age        = $this->other_user_max_age;
-    //
-    //   $search         = $request->search;
-    //   $orderBy        = $request->orderBy;
-    //   $pageSize       = $request->pageSize;
-    //
-    //   $stmt = $this->whereBetween('age', [$min_age, $max_age])->where('user_id', '!=', $this->user_id)
-    //   ->where('user_type', 'user')->where('delete_flag', 'no')->where('active_flag', 'active')
-    //   ->where('complete_profile', 'yes')->where('state', $state)->where('country', $country)
-    //   ->where('createtime', '>=', Carbon::now()->subDays(1)->toDateTimeString());
-    //
-    //   $this->withSearch($search, $stmt);
-    //
-    //   if ($other_gender === 'both') {
-    //     $stmt->whereIn('other_user_gender', [$gender, 'both']);
-    //   } else {
-    //     $stmt->where('gender', $other_gender)->whereIn('other_user_gender', ['both', $gender]);
-    //   }
-    //
-    //   $users = $stmt->latest()->get();
-    //   if ($users) {
-    //     $users->map(function($user){
-    //       $user->withCover()->withProfileUrl()->withUserRequestStatus($this);
-    //       $user->joined_interval = Activity::time_elapsed_string($user->createtime);
-    //     });
-    //   }
-    //   return $users;
-    // }
-    //
-    // public function myGroups(){
-    //   return Group::getMine($this);
-    // }
-    //
+
     public function withLiked($q, $author = false){
       // $relation = $author ? 'post.author.liked_profile' : 'liked_profile' ;
       if ($author) {
@@ -509,169 +434,19 @@ class User extends Authenticatable implements HasMedia
       return $this;
     }
     //
-    // public function withProfileUrl(){
-    //   $media = $this->getFirstMedia('avatar');
-    //   $obj = new \stdClass();
-    //   if ($media) {
-    //     $obj->thumb = $media->getUrl('thumb');
-    //     $obj->photo = $media->getUrl();
-    //   }
-    //   if (isset($this->images)) {
-    //     $this->images->avatar = $obj;
-    //   } else {
-    //     $this->images = new \stdClass();
-    //     $this->images->avatar = $obj;
-    //   }
-    //   return $this;
-    // }
-    //
-    // public function MyMediaUrl($collection = 'avatar', $conversion = 'thumb'){
-    //   $media = $this->getFirstMedia($collection);
-    //   if ($media) {
-    //     return $media->getUrl($conversion);
-    //   }
-    //   return null;
-    // }
-    //
-    // public function withCover(){
-    //   $media = $this->getFirstMedia('cover');
-    //   $obj = new \stdClass();
-    //   if ($media) {
-    //     $obj->thumb = $media->getUrl('thumb');
-    //     $obj->photo = $media->getUrl();
-    //   }
-    //   if ($this->images) {
-    //     $this->images->cover = $obj;
-    //   } else {
-    //     $this->images = new \stdClass();
-    //     $this->images->cover = $obj;
-    //   }
-    //   return $this;
-    // }
-    //
-
-
-    //
     public static function getNotificationStatus($user_id){
       return true;
-      // self::where('user_id', $user_id)->where('notification_status', 'on')->first();
     }
-    //
-    // public static function getUser($user_id){
-    //   return self::where('user_id', $user_id)
-    //   // ->where('otp_verify', 'yes')
-    //   ->where('delete_flag', 'no')->first();
-    // }
-    //
 
-    //
-
-    //
-
-    //
-    // // public function image_upload($image, $type){
-    // //   // profile
-    // //   $data = str_replace('data:image/png;base64,', '', $image);
-    // //   $data = str_replace(' ', '+', $data);
-    // //   $data = base64_decode($data);
-    // //   $file_name = rand() . '.png';
-    // //   $file = 'images/'.$file_name;
-    // //   $success = file_put_contents(base_path().'/'.$file, $data);
-    // //
-    // //   try {
-    // //     if ($type === 'profile') {
-    // //         $this->image = $file_name;
-    // //     } elseif ($type === 'image1') {
-    // //       $this->image1 = $file_name;
-    // //     } elseif ($type === 'image2') {
-    // //       $this->image2 = $file_name;
-    // //     } elseif ($type === 'image3') {
-    // //       $this->image3 = $file_name;
-    // //     } elseif ($type === 'image4') {
-    // //       $this->image4 = $file_name;
-    // //     } elseif ($type === 'image5') {
-    // //       $this->image5 = $file_name;
-    // //       $this->profile_status = 'step_1';
-    // //       $this->complete_profile = 'yes';
-    // //
-    // //     }
-    // //     $this->save();
-    // //
-    // //     return ['success' => true, 'image' => $file_name];
-    // //   } catch (\Exception $e) {
-    // //     throw new \Exception($e->getMessage(), $e);
-    // //   }
-    // // }
-    //
-    // public function deletePhoto($image_type, $index = false){
-    //   $image_type = $image_type == 'profile' ? 'image' : $image_type;
-    //   $this->$image_type = null;
-    //   if ($index) {
-    //     $medias = $this->getMedia($image_type);
-    //     foreach ($medias as $ind => $media) {
-    //       if ($index == $ind) {
-    //         $media->delete();
-    //       }
-    //     }
-    //   } else {
-    //     $mdeia = $this->getFirstMedia($image_type);
-    //     if ($mdeia) {
-    //       $mdeia->delete();
-    //     }
-    //   }
-    //
-    //   return true;
-    // }
-    //
-    // public function swapProfile($image_type){
-    //   $image = $this->$image_type;
-    //   $this->image = $image;
-    //   return $this->save();
-    // }
-    //
-    // public static function getActivatedUser($user_id){
-    //   return self::where('delete_flag', 'no')->where('active_flag', 'active')
-    //   ->where('user_id', $user_id)->where('otp_verify', 'yes')->where('delete_flag', 'no')->first();
-    // }
-    //
-    // public static function stateRandomUser($state){
-    //   return self::where("image", '!=', NULL)->where("image", "<>", '')->where("state",$state)
-    //   ->where("user_type", 'user')->where("delete_flag", 'no')->where('active_flag', 'active')
-    //   ->where('complete_profile', 'yes')->inRandomOrder()->limit(3)->get();
-    // }
-    //
     public function myRandomUser($request){
       return $this->Users($request)
       // whereHas('image')
       ->inRandomOrder()->limit(10)->get();
     }
     //
-    // public static function countUsersInState($state){
-    //   return self::where('state', $state)->where("user_type", 'user')->where("delete_flag", 'no')
-    //   ->where('active_flag', 'active')->where('complete_profile', 'yes')->orderBy('user_id')->count()-1;
-    // }
-    //
     public function countCompleteUsers(){
       return $this->where('profile_step', 100)->count()-1;
     }
-    //
-    // public function getMyPlanId(){
-    //   return Plan::where('delete_flag', 'no')->where('plan_id', $this->current_plan_id)->first();
-    // }
-    //
-    // public function getMyRemaningRequest(){
-    //   return $this->plan->no_contact_use;
-    // }
-    //
-    // public function getMyPlanData(){
-    //   return UserPlan::where('delete_flag', 'no')->where('user_id', $this->user_id)->latest('updatetime')->first();
-    // }
-    //
-    // public function getMyTodayRequest(){
-    //   $check_request_data = UserRequest::where('delete_flag', 'no')->where('user_id', $this->user_id)->orderBy('request_id', 'DESC')->get();
-    //   $check_request_data_num_row = $check_request_data->count();
-    // 	return $check_request_data_num_row;
-    // }
 
     public function isContact(User $user){
       return Contact::where('type', 'friend')->where(function($q) use($user){
@@ -696,21 +471,10 @@ class User extends Authenticatable implements HasMedia
           $q->where('status', 'pending')->orWhere('status', 'accepted');
         });
       });
-
-      // return $this->requests()->where('other_user_id', $other_user->id)
-      // // ->where()
-      // ->orWhere('user_id', $other_user->id)
-      // // ->where('status', 'pending')->orWhere('status', 'accepted')
-      // ->first();
     }
 
     public function checkRequestExists(User $other_user){
       return $this->checkBetween($other_user);
-      // return $this->requests()->where('other_user_id', $other_user->id)
-      // // ->where()
-      // ->orWhere('user_id', $other_user->id)
-      // ->where('status', 'pending')->orWhere('status', 'accepted')
-      // ->get();
     }
 
     public function requestNotificationData(User $other_user){

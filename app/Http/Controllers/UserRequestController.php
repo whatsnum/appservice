@@ -28,7 +28,7 @@ class UserRequestController extends Controller
           $requests = $user->requests_pending();
           break;
       }
-      $requests = $requests->paginate($request->pageSize ? $request->pageSize : 20);
+      $requests = UserRequest::withRequestDetail($requests)->paginate($request->pageSize ? $request->pageSize : 20);
 
       return ['status' => true, 'requests' => $requests];
     }
