@@ -60,8 +60,17 @@ class UserRequest extends Model
     }
   }
 
-  public static function withRequestDetail($stmt){
-    return $stmt->with('requester')->select()->addSelect(\DB::raw("(CASE WHEN user_requests.status = 'pending' THEN 'sent' ELSE CASE WHEN user_requests.status = 'accepted' THEN 'yes' ELSE 'no' END END) AS request_detail"));
+  public static function withRequestDetail($stmt, $type = ''){
+    $pending_status = $type == 'sent' ? 'received' : 'sent';
+    $accepted_status = $type == 'sent' ? 'sent' : 'received';
+    $with = $type == 'sent' ? 'receiver' : 'sender';
+    return $stmt->with([
+      $with => function ($q) {
+        $q->join('user_metas', 'user_metas.user_id', '=', 'users.id')
+        ->select()->addSelect(['user_metas.value as job_title', 'users.name as name'])
+        ->where('user_metas.name', 'job_title');
+      },
+    ])->select()->addSelect(\DB::raw("(CASE WHEN user_requests.status = 'pending' THEN '$pending_status' ELSE CASE WHEN user_requests.status = 'accepted' THEN '$accepted_status' ELSE 'no' END END) AS request_detail"));
   }
 
   public static function checkFriendship($user_id, $other_user_id){
@@ -86,8 +95,12 @@ class UserRequest extends Model
     return self::myContacts($user)->count();
   }
 
-  public function requester(){
+  public function sender(){
     return $this->belongsTo(User::class, 'user_id');
+  }
+
+  public function receiver(){
+    return $this->belongsTo(User::class, 'other_user_id');
   }
 
 
