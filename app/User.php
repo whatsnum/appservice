@@ -62,6 +62,14 @@ class User extends Authenticatable implements HasMedia
     //   return $this->hasMany(Notification::class);
     // }
 
+    public function inPhoneBook(User $user){
+      return $this->phone_books()->where('other_user_id', $user->id)->first();
+    }
+
+    public function addPhoneBook(User $user){
+      return $this->phone_books()->create(['other_user_id' => $user->id]);
+    }
+
     public function updateMeta($name, $value){
       return UserMeta::updateMeta($this, $name, $value);
     }
@@ -579,6 +587,10 @@ class User extends Authenticatable implements HasMedia
     // public function messages(){
     //   return $this->hasManyThrough(Message::class, ConversationUser::class);
     // }
+
+    public function phone_books(){
+      return $this->hasMany(PhoneBook::class);
+    }
 
     public function settings(){
       return $this->hasMany(Setting::class);

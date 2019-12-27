@@ -60,6 +60,7 @@ Route::group(['middleware' => 'localization'], function(){
     Route::resource('messages', 'MessageController');
     Route::resource('conversations', 'ConversationController');
     Route::resource('settings', 'SettingController');
+    Route::resource('phone_books', 'PhoneBookController');
     // users
     Route::get('users/state/random', 'UserRequestController@random_users');
     Route::get('users/map', 'UserController@latlng');
@@ -79,6 +80,8 @@ Route::group(['middleware' => 'localization'], function(){
     Route::post('toggleDirectMessage', 'UserController@toggleDirectMessage');
     Route::post('image_upload', 'UserController@uploadImage');
     Route::post('settings/change', 'SettingController@change');
+    // phone book
+    Route::post('phone_books/sync', 'PhoneBookController@sync');
     // messages
     // Route::get('messages/thread/{thread}', 'MessageController@thread');
     // notes
