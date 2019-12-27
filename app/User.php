@@ -321,7 +321,9 @@ class User extends Authenticatable implements HasMedia
         ->where('user_metas.name', 'job_title');
       } else {
         $job_title = $this->job_title()->first();
-        $this->job_title = $job_title ?? $job_title->value;
+        if ($job_title) {
+          $this->job_title = $job_title ?? $job_title->value;
+        }
         return $this;
       }
     }
