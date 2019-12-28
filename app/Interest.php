@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Interest extends Model
 {
   protected $fillable = ['name'];
+  protected $hidden = ["pivot", "created_at", "updated_at"];
 
   public static function getInterests($request){
     $search         = $request->search;

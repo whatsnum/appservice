@@ -41,17 +41,20 @@ class MessageController extends Controller
       $user = $request->user();
       $request->validate([
         'other_user_id' => 'required',
-        'message' => 'string',
-        'image' => 'imageable',
-        // 'video' => 'mimetypes:video/avi,video/mpeg,video/quicktime'
+        'message' => 'string|nullable',
+        'image' => 'imageable|nullable',
+        'gif' => 'url|nullable',
+        'videos' => 'array',
+        'videos.*' => 'mimetypes:video/mp4,video/x-msvideo,video/3gpp,video/avi,video/mpeg,video/quicktime|max:40000'
       ]);
 
       // extract
       $image = $request->image;
-      $video = $request->video;
+      $videos = $request->videos;
+      $gif = $request->gif;
       $text = $request->message;
 
-      if (!$image && !$video && !$text) {
+      if (!$image && !$videos && !$text && !$gif) {
         return ['status' => false, 'msg' => trans('msg.empty_msg')];
       }
 
@@ -70,12 +73,16 @@ class MessageController extends Controller
           'user_id' => $user->id,
           'reply' => $request->reply,
           'message' => $text,
+          'gif' => $gif,
         ]);
+
+        // $message = new Message;
+        // dd($message);
 
         if ($image) {
           $message->saveImage($image);
-        } else if ($video) {
-          $message->saveVideo($video);
+        } else if ($videos) {
+          $message->saveVideos($videos);
         }
 
         return ['status' => !!$message, 'message' => $message, 'msg' => trans($message ? 'msg.created' : 'msg.not_created')];
@@ -90,9 +97,11 @@ class MessageController extends Controller
      * @param  \App\Message  $message
      * @return \Illuminate\Http\Response
      */
-    public function show(Message $message)
+    public function show(Request $request, Message $message)
     {
-        //
+      $user = $request->user();
+      $this->authorize('view', $message);
+      return $message;
     }
 
     /**
@@ -137,6 +146,6 @@ class MessageController extends Controller
         $message->deletedBy($user);
       }
 
-      return ['status' => true, 'message' => $message];
+      return ['status' => true, 'message' => $message->withImageUrl()];
     }
 }

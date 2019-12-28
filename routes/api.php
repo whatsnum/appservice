@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\NoteEvent;
 use Illuminate\Http\Request;
 
 /*
@@ -64,6 +65,8 @@ Route::group(['middleware' => 'localization'], function(){
     Route::get('users/map', 'UserController@latlng');
     Route::post('users/like/{other_user}', 'UserController@like');
     Route::post('users/passcode/update', 'UserController@updatePassCode');
+    Route::put('users/user_requests/{otherUser}', 'UserController@attemptRequest');
+    Route::delete('users/user_requests/{otherUser}', 'UserController@cancelRequest');
     // contacts
     Route::get('contacts/users/blocked', 'ContactController@blocked');
     Route::post('contacts/{otherUser}/block', 'ContactController@block');
@@ -78,10 +81,12 @@ Route::group(['middleware' => 'localization'], function(){
     Route::post('settings/change', 'SettingController@change');
     // messages
     // Route::get('messages/thread/{thread}', 'MessageController@thread');
-
-        Route::resource('notes', 'NoteController');
-        Route::post('notes/view', 'NoteController@viewNote');
-        Route::post('notes/hideShowNote', 'NoteController@hideShowNote');
+    // notes
+    Route::resource('notes', 'NoteController');
+    Route::post('notes/view', 'NoteController@viewNote');
+    Route::post('notes/hideShowNote', 'NoteController@hideShowNote');
+    // conversations
+    Route::get('conversations/images/{otherUser}', 'ConversationController@images');
 //     Route::get('get_my_receive_request.php', 'UserController@get_my_receive_request');
 //     Route::get('get_my_pending_sent_requests.php', 'UserController@get_my_pending_sent_requests');
 //     Route::get('get_my_whatsnum_contacts.php', 'UserController@get_my_whatsnum_contacts');
@@ -126,8 +131,9 @@ use App\User;
 // use App\UserRequest;
 Route::get('test', function(Request $request){
     $user = User::findOrFail(1);
-    $updates = $request->all();
-    \App\Notification::DeviceTokenStore_1_Signal($user, 'android', "ee3c6b83-fc80-4d21-903a-3953659f878c");
+//    $updates = $request->all();
+//    \App\Notification::DeviceTokenStore_1_Signal($user, 'android', "ee3c6b83-fc80-4d21-903a-3953659f878c");
+    event(new NoteEvent($user, 'note.updated'));
     return $user;
 });
 Route::get('app/2019/reset', function(Request $request){
