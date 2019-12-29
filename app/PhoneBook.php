@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PhoneBook extends Model
 {
-  protected $fillable = ['user_id', 'other_user_id'];
+  protected $fillable = ['use', 'other_user_id'];
 
   protected static $testNumbers = [
     '234-8110000606', '255-5445665484', '500-27049054', '1876-71466469', '234-4862635'
@@ -26,10 +26,13 @@ class PhoneBook extends Model
     foreach ($books as $book) {
       $otherUser = User::where('phone_code', $book['phone_code'])->where('phone', $book['phone'])->first();
       if ($otherUser) {
-        if(!$user->inPhoneBook($otherUser)){
-          $user->addPhoneBook($otherUser);
+        $phonebook = $user->inPhoneBook($otherUser);
+        if(!$phonebook){
+          $numsUsers[] = $user->addPhoneBook($otherUser);
+        } else {
+          $numsUsers[] = $phonebook;
         }
-        $numsUsers[] = $otherUser->id;
+        // $numsUsers[] = $otherUser;
       }
     }
     return $numsUsers;

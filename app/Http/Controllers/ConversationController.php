@@ -16,15 +16,18 @@ class ConversationController extends Controller
     public function index(Request $request)
     {
       $user = $request->user();
+      // $undelivered = $user->conversations()->messages()->get();
+      // ->where('messages.user_id', '!=', $user->id )->where('messages.delivered_at', null)->update(['delivered_at' => now()]);
+      // return $undelivered;
+      // dd($undelivered);
+
       $conversations = $user->conversations()->with(['last_message', 'participant_id' => function($q) use($user){
         $q->where('conversation_users.user_id', '!=', $user->id)->select('conversation_users.user_id as id');
       }])->withCount(['unread'])->get();
 
-
-
       $conversations->map(function ($conv) {
-        // dd($conv->last_message->medias);
-        // dd($conv->last_message->medias()->exists());
+        $conv->undelivered()->update(['delivered_at' => now()]);
+
         if ($conv->last_message->medias()->exists()) {
           $conv->last_message->withMedia();
         }

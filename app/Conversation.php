@@ -29,7 +29,12 @@ class Conversation extends Model
 
   public function unread(){
     $user = auth()->user();
-    return $this->hasMany(Message::class)->where('user_id', '!=', $user->id )->where('read_at', null);
+    return $this->messages()->where('user_id', '!=', $user->id )->where('read_at', null);
+  }
+
+  public function undelivered(){
+    $user = auth()->user();
+    return $this->messages()->where('user_id', '!=', $user->id )->where('delivered_at', null);
   }
 
   public function author(){

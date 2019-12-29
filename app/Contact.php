@@ -23,6 +23,7 @@ class Contact extends Model
   public function blocker(){
     return $this->belongsTo(User::class)->where('type', 'block');
   }
+
   // public function contacts(){
   //   return $this->belongsTo(User::class)->orWhere('other');
   // }
