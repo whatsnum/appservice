@@ -32,7 +32,6 @@ class PhoneBook extends Model
         } else {
           $numsUsers[] = $phonebook;
         }
-        // $numsUsers[] = $otherUser;
       }
     }
     return $numsUsers;
