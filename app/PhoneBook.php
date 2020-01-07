@@ -32,13 +32,12 @@ class PhoneBook extends Model
         } else {
           $numsUsers[] = $phonebook;
         }
-        // $numsUsers[] = $otherUser;
       }
     }
     return $numsUsers;
   }
 
   public static function extract($phoneNumber){
-    return explode('-', $phoneNumber);
+    return explode(' ', $phoneNumber);
   }
 }
