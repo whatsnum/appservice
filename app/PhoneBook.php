@@ -38,6 +38,6 @@ class PhoneBook extends Model
   }
 
   public static function extract($phoneNumber){
-    return explode('-', $phoneNumber);
+    return explode(' ', $phoneNumber);
   }
 }
